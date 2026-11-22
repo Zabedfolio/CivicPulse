@@ -2,12 +2,21 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { motion, useInView } from "motion/react";
+import { motion } from "motion/react";
 import { BlurText } from "@/components/ui/BlurText";
 import { MotionCard } from "@/components/ui/MotionCard";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
+
+// Home Components
+import { EmergencyHotlineBar } from "@/components/home/EmergencyHotlineBar";
+import { QuickActionWidget } from "@/components/home/QuickActionWidget";
+import { BeforeAfterSlider } from "@/components/home/BeforeAfterSlider";
+import { RoleExperienceTabs } from "@/components/home/RoleExperienceTabs";
+import { LiveIncidentFeed } from "@/components/home/LiveIncidentFeed";
+import { DepartmentSlaScorecard } from "@/components/home/DepartmentSlaScorecard";
+import { CitizenFaqAccordion } from "@/components/home/CitizenFaqAccordion";
+
 import {
   ArrowRight,
   Flame,
@@ -21,10 +30,6 @@ import {
   ShieldCheck,
   Star,
   MapPin,
-  FileCheck2,
-  Wrench,
-  Sparkles,
-  Users,
 } from "lucide-react";
 
 // 6 Categories matching PLAN.md design tokens
@@ -154,19 +159,22 @@ export default function HomePage() {
 
   return (
     <div className="relative isolate overflow-hidden">
+      {/* 1. TOP EMERGENCY HOTLINE RIBBON */}
+      <EmergencyHotlineBar />
+
       {/* Background radial gradient mesh */}
       <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
         <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#14B8A6] via-[#06B6D4] to-[#FBBF24] opacity-25 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
       </div>
 
-      {/* 1. HERO SECTION (Motion Brew BlurText + Spring CTAs) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 sm:pt-28 sm:pb-24 text-center">
+      {/* 2. HERO SECTION + INSTANT QUICK ACTION WIDGET */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 sm:pt-24 sm:pb-16 text-center">
         {/* Animated Badge Pill */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-teal-50 border border-teal-200 text-[#0D9488] shadow-xs dark:bg-teal-950/60 dark:border-teal-800 mb-8"
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-teal-50 border border-teal-200 text-[#0D9488] shadow-xs dark:bg-teal-950/60 dark:border-teal-800 mb-6"
         >
           <span className="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse" />
           <span>GovTech Smart City Platform · Active Municipal Dispatch</span>
@@ -188,35 +196,19 @@ export default function HomePage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.25, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-6 text-base sm:text-xl text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
+          className="mt-5 text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed"
         >
           Empowering citizens to report public infrastructure failures with GPS accuracy and photo evidence, while municipal teams triage and resolve them with complete public transparency.
         </motion.p>
 
-        {/* Dual Spring CTA Buttons */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
-        >
-          <Link href="/issues/new">
-            <Button variant="primary" size="lg" className="group text-base px-8 h-12 shadow-md shadow-teal-500/20">
-              Report an Issue
-              <ArrowRight className="w-4 h-4 ml-1 transition-transform duration-200 group-hover:translate-x-1" />
-            </Button>
-          </Link>
-          <Link href="/map">
-            <Button variant="outline" size="lg" className="text-base px-8 h-12">
-              <MapPin className="w-4 h-4 mr-1 text-[#0D9488]" />
-              Explore City Map
-            </Button>
-          </Link>
-        </motion.div>
+        {/* Quick Action Widget: Report Fast OR Track by Ticket ID */}
+        <div className="mt-8 sm:mt-12">
+          <QuickActionWidget />
+        </div>
       </section>
 
-      {/* 2. LIVE CITY METRICS (Pulse Counter Cards) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* 3. LIVE CITY METRICS (Pulse Counter Cards) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           <MotionCard className="text-center p-6 bg-white/80 backdrop-blur dark:bg-slate-900/80">
             <div className="text-3xl sm:text-4xl font-extrabold text-[#0D9488] mb-1">
@@ -253,8 +245,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 3. SIX INFRASTRUCTURE CATEGORIES (Bento Grid) */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
+      {/* 4. BEFORE & AFTER INTERACTIVE REPAIR SLIDER */}
+      <BeforeAfterSlider />
+
+      {/* 5. SIX INFRASTRUCTURE CATEGORIES (Bento Grid) */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center max-w-2xl mx-auto mb-12">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#0D9488] mb-2">
             Coverage Scope
@@ -301,7 +296,10 @@ export default function HomePage() {
                 </div>
 
                 <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-semibold text-[#0D9488]">
-                  <Link href={`/issues/new?category=${encodeURIComponent(cat.title)}`} className="inline-flex items-center gap-1 hover:underline">
+                  <Link
+                    href={`/issues/new?category=${encodeURIComponent(cat.title)}`}
+                    className="inline-flex items-center gap-1 hover:underline"
+                  >
                     Report {cat.title}
                     <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
                   </Link>
@@ -312,7 +310,16 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 4. TRANSPARENT 6-STAGE WORKFLOW (Interactive Stepper) */}
+      {/* 6. 4-STAKEHOLDER ROLE EXPERIENCE TABS */}
+      <RoleExperienceTabs />
+
+      {/* 7. LIVE INCIDENT STREAM & CITIZEN RADAR */}
+      <LiveIncidentFeed />
+
+      {/* 8. MUNICIPAL SLA PERFORMANCE SCORECARD */}
+      <DepartmentSlaScorecard />
+
+      {/* 9. TRANSPARENT 6-STAGE WORKFLOW (Interactive Stepper) */}
       <section className="bg-surface/60 dark:bg-slate-900/40 border-y border-border py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
@@ -407,10 +414,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* 5. CALL TO ACTION BANNER */}
+      {/* 10. CITIZEN FAQ ACCORDION */}
+      <CitizenFaqAccordion />
+
+      {/* 11. MUNICIPAL CALL TO ACTION BANNER */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div className="relative rounded-3xl bg-gradient-to-br from-[#0D9488] via-[#0F766E] to-[#042F2E] p-8 sm:p-14 text-white text-center shadow-xl overflow-hidden">
-          {/* Subtle background glow circles */}
           <div className="absolute -left-20 -top-20 w-72 h-72 rounded-full bg-white/10 blur-3xl pointer-events-none" />
           <div className="absolute -right-20 -bottom-20 w-72 h-72 rounded-full bg-amber-400/10 blur-3xl pointer-events-none" />
 

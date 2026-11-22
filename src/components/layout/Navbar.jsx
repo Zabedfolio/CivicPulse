@@ -55,29 +55,29 @@ export function Navbar() {
         </Link>
 
         {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-8">
           <Link
             href="/"
-            className="text-sm font-medium text-slate-700 hover:text-[#0D9488] transition-colors dark:text-slate-300 dark:hover:text-teal-400"
+            className="text-[15px] font-medium text-slate-700 hover:text-[#0D9488] transition-colors dark:text-slate-300 dark:hover:text-teal-400"
           >
             Home
           </Link>
           <Link
             href="/map"
-            className="text-sm font-medium text-slate-700 hover:text-[#0D9488] transition-colors dark:text-slate-300 dark:hover:text-teal-400"
+            className="text-[15px] font-medium text-slate-700 hover:text-[#0D9488] transition-colors dark:text-slate-300 dark:hover:text-teal-400"
           >
             City Map
           </Link>
           <Link
             href="/about"
-            className="text-sm font-medium text-slate-700 hover:text-[#0D9488] transition-colors dark:text-slate-300 dark:hover:text-teal-400"
+            className="text-[15px] font-medium text-slate-700 hover:text-[#0D9488] transition-colors dark:text-slate-300 dark:hover:text-teal-400"
           >
             About
           </Link>
         </nav>
 
         {/* Action Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-4">
           {user ? (
             <div className="flex items-center gap-3">
               <Link href="/profile" className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200 hover:text-[#0D9488]">
@@ -96,15 +96,19 @@ export function Navbar() {
             </div>
           ) : (
             <>
-              <Link href="/login">
-                <Button variant="ghost" size="sm">
-                  Sign In
-                </Button>
+              <Link
+                href="/login"
+                className="text-[15px] font-medium text-slate-700 hover:text-[#0D9488] px-2 py-1.5 transition-colors dark:text-slate-200 dark:hover:text-teal-400"
+              >
+                Sign In
               </Link>
               <Link href="/issues/new">
-                <Button variant="primary" size="sm">
+                <button
+                  type="button"
+                  className="bg-[#0D9488] hover:bg-[#0B7A6F] text-white text-[15px] font-medium px-4 py-2 rounded-lg transition-all shadow-sm hover:shadow focus:outline-none focus:ring-2 focus:ring-[#0D9488]/40 cursor-pointer"
+                >
                   Report Issue
-                </Button>
+                </button>
               </Link>
             </>
           )}
