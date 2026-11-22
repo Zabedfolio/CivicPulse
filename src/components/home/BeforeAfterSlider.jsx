@@ -1,0 +1,223 @@
+"use client";
+
+import React, { useState, useRef, useCallback } from "react";
+import { motion } from "motion/react";
+import { CheckCircle2, AlertTriangle, Clock, ShieldCheck, Star, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+const SHOWCASES = [
+  {
+    id: "road",
+    title: "Chittagong Port Access Road",
+    category: "Road Damage",
+    department: "Road Maintenance Engineering Division",
+    resolvedIn: "32 Hours",
+    rating: 5.0,
+    beforeTag: "Cracked Asphalt & 45cm Pothole (Hazard)",
+    afterTag: "Hot-Mix Asphalt Paving (Verified Complete)",
+    beforeGradient: "from-amber-950/90 via-stone-900 to-black",
+    afterGradient: "from-teal-950/90 via-slate-900 to-emerald-950/90",
+  },
+  {
+    id: "streetlight",
+    title: "GEC Circle - O.R. Nizam Avenue",
+    category: "Streetlight",
+    department: "Municipal Electrical Works Unit",
+    resolvedIn: "18 Hours",
+    rating: 4.9,
+    beforeTag: "Damaged Cable & Complete Blackout",
+    afterTag: "Smart LED Luminaire Installed (Online)",
+    beforeGradient: "from-slate-950 via-zinc-900 to-black",
+    afterGradient: "from-cyan-950/90 via-slate-900 to-teal-950/90",
+  },
+  {
+    id: "drainage",
+    title: "Agrabad Commercial Area Canal",
+    category: "Drainage Failures",
+    department: "Stormwater & Drainage Division",
+    resolvedIn: "44 Hours",
+    rating: 4.8,
+    beforeTag: "Heavy Silt & Severe Monsoon Waterlogging",
+    afterTag: "Mechanized Desilting & Reinforced Grate",
+    beforeGradient: "from-blue-950 via-slate-950 to-black",
+    afterGradient: "from-teal-950/90 via-slate-900 to-blue-950/90",
+  },
+];
+
+export function BeforeAfterSlider() {
+  const [activeCase, setActiveCase] = useState(0);
+  const [sliderPosition, setSliderPosition] = useState(50); // percentage (0 - 100)
+  const containerRef = useRef(null);
+  const isDragging = useRef(false);
+
+  const current = SHOWCASES[activeCase];
+
+  const handleMove = useCallback((clientX) => {
+    if (!containerRef.current) return;
+    const rect = containerRef.current.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
+    setSliderPosition(percentage);
+  }, []);
+
+  const handleTouchMove = (e) => {
+    if (e.touches && e.touches[0]) {
+      handleMove(e.touches[0].clientX);
+    }
+  };
+
+  const handleMouseDown = () => {
+    isDragging.current = true;
+  };
+
+  const handleMouseUp = () => {
+    isDragging.current = false;
+  };
+
+  const handleMouseMove = (e) => {
+    if (isDragging.current) {
+      handleMove(e.clientX);
+    }
+  };
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <div className="text-center max-w-2xl mx-auto mb-10">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-50 border border-teal-200 text-[#0D9488] dark:bg-teal-950/60 dark:border-teal-800 mb-3">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Tangible Proof of Work</span>
+        </div>
+        <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          Real Issues. Verified Physical Repairs.
+        </h2>
+        <p className="mt-3 text-sm text-muted">
+          Drag the interactive slider to inspect photo evidence before municipal intervention and verified completion proofs.
+        </p>
+
+        {/* Showcase Selector Pills */}
+        <div className="flex flex-wrap items-center justify-center gap-2 mt-6">
+          {SHOWCASES.map((item, idx) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => {
+                setActiveCase(idx);
+                setSliderPosition(50);
+              }}
+              className={cn(
+                "px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer select-none",
+                activeCase === idx
+                  ? "bg-[#0D9488] text-white shadow-sm shadow-teal-500/20"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200"
+              )}
+            >
+              {item.category}: {item.title.split("-")[0]}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Interactive Dual Frame Container */}
+      <div className="max-w-4xl mx-auto rounded-3xl bg-white dark:bg-slate-900 border border-border dark:border-slate-800 shadow-xl overflow-hidden p-4 sm:p-6">
+        <div
+          ref={containerRef}
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseUp}
+          onTouchMove={handleTouchMove}
+          className="relative h-80 sm:h-96 rounded-2xl overflow-hidden select-none cursor-ew-resize border border-border"
+        >
+          {/* "AFTER" Layer (Full width underneath) */}
+          <div
+            className={cn(
+              "absolute inset-0 bg-gradient-to-br flex flex-col justify-between p-6 sm:p-8 text-white",
+              current.afterGradient
+            )}
+          >
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/30 text-emerald-300 border border-emerald-400/30 backdrop-blur">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                AFTER (VERIFIED REPAIRED)
+              </span>
+              <div className="flex items-center gap-1 text-xs font-bold text-amber-300 bg-black/40 backdrop-blur px-2.5 py-1 rounded-full border border-white/10">
+                <Star className="w-3.5 h-3.5 fill-amber-300" />
+                {current.rating} Citizen Rating
+              </div>
+            </div>
+
+            <div className="max-w-md">
+              <div className="text-xl sm:text-2xl font-extrabold text-white">
+                {current.afterTag}
+              </div>
+              <p className="text-xs text-teal-200 mt-1">
+                Completed by {current.department} in {current.resolvedIn}
+              </p>
+            </div>
+          </div>
+
+          {/* "BEFORE" Layer (Clipped dynamically by slider position) */}
+          <div
+            className={cn(
+              "absolute inset-0 bg-gradient-to-br flex flex-col justify-between p-6 sm:p-8 text-white",
+              current.beforeGradient
+            )}
+            style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
+          >
+            <div className="flex items-center justify-between">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/30 text-red-300 border border-red-400/30 backdrop-blur">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                BEFORE (CITIZEN REPORT)
+              </span>
+            </div>
+
+            <div className="max-w-md">
+              <div className="text-xl sm:text-2xl font-extrabold text-white">
+                {current.beforeTag}
+              </div>
+              <p className="text-xs text-amber-200 mt-1">
+                Reported by citizen with GPS coordinates in {current.title}
+              </p>
+            </div>
+          </div>
+
+          {/* Draggable Divider Handle */}
+          <div
+            className="absolute top-0 bottom-0 w-1 bg-white cursor-ew-resize shadow-[0_0_15px_rgba(0,0,0,0.5)] z-30"
+            style={{ left: `${sliderPosition}%` }}
+            onMouseDown={handleMouseDown}
+            onTouchStart={handleMouseDown}
+          >
+            <div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-9 h-9 rounded-full bg-white text-[#0D9488] shadow-lg flex items-center justify-center font-bold text-xs ring-4 ring-black/20">
+              <div className="flex items-center gap-0.5">
+                <ChevronLeft className="w-3 h-3 -mr-1" />
+                <ChevronRight className="w-3 h-3 -ml-1" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Meta Details */}
+        <div className="mt-4 pt-4 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-muted">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-[#0D9488]" />
+            <span>
+              Official municipal work order verified on {current.title}
+            </span>
+          </div>
+          <div className="flex items-center gap-4 text-xs font-semibold">
+            <span className="inline-flex items-center gap-1 text-[#0D9488]">
+              <Clock className="w-3.5 h-3.5" />
+              Fixed in {current.resolvedIn}
+            </span>
+            <span className="text-slate-400">·</span>
+            <span className="text-slate-600 dark:text-slate-300">
+              Audited by Municipal Supervisor
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default BeforeAfterSlider;
