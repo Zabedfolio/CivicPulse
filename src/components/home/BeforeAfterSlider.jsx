@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import { motion } from "motion/react";
 import { CheckCircle2, AlertTriangle, Clock, ShieldCheck, Star, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -15,8 +16,8 @@ const SHOWCASES = [
     rating: 5.0,
     beforeTag: "Cracked Asphalt & 45cm Pothole (Hazard)",
     afterTag: "Hot-Mix Asphalt Paving (Verified Complete)",
-    beforeGradient: "from-amber-950/90 via-stone-900 to-black",
-    afterGradient: "from-teal-950/90 via-slate-900 to-emerald-950/90",
+    beforeImage: "/images/showcases/pothole-before.jpg",
+    afterImage: "/images/showcases/pothole-after.jpg",
   },
   {
     id: "streetlight",
@@ -27,8 +28,8 @@ const SHOWCASES = [
     rating: 4.9,
     beforeTag: "Damaged Cable & Complete Blackout",
     afterTag: "Smart LED Luminaire Installed (Online)",
-    beforeGradient: "from-slate-950 via-zinc-900 to-black",
-    afterGradient: "from-cyan-950/90 via-slate-900 to-teal-950/90",
+    beforeImage: "/images/showcases/streetlight-before.jpg",
+    afterImage: "/images/showcases/streetlight-after.jpg",
   },
   {
     id: "drainage",
@@ -39,8 +40,8 @@ const SHOWCASES = [
     rating: 4.8,
     beforeTag: "Heavy Silt & Severe Monsoon Waterlogging",
     afterTag: "Mechanized Desilting & Reinforced Grate",
-    beforeGradient: "from-blue-950 via-slate-950 to-black",
-    afterGradient: "from-teal-950/90 via-slate-900 to-blue-950/90",
+    beforeImage: "/images/showcases/drainage-before.jpg",
+    afterImage: "/images/showcases/drainage-after.jpg",
   },
 ];
 
@@ -128,55 +129,69 @@ export function BeforeAfterSlider() {
           className="relative h-80 sm:h-96 rounded-2xl overflow-hidden select-none cursor-ew-resize border border-border"
         >
           {/* "AFTER" Layer (Full width underneath) */}
-          <div
-            className={cn(
-              "absolute inset-0 bg-gradient-to-br flex flex-col justify-between p-6 sm:p-8 text-white",
-              current.afterGradient
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/30 text-emerald-300 border border-emerald-400/30 backdrop-blur">
-                <CheckCircle2 className="w-3.5 h-3.5" />
-                AFTER (VERIFIED REPAIRED)
-              </span>
-              <div className="flex items-center gap-1 text-xs font-bold text-amber-300 bg-black/40 backdrop-blur px-2.5 py-1 rounded-full border border-white/10">
-                <Star className="w-3.5 h-3.5 fill-amber-300" />
-                {current.rating} Citizen Rating
+          <div className="absolute inset-0 select-none overflow-hidden">
+            <Image
+              src={current.afterImage}
+              alt={current.afterTag}
+              fill
+              sizes="(max-width: 768px) 100vw, 896px"
+              className="object-cover"
+              priority
+            />
+            {/* Dark gradient overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/60 flex flex-col justify-between p-6 sm:p-8 text-white">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/80 text-white border border-emerald-400/50 backdrop-blur-md shadow-md">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  AFTER (VERIFIED REPAIRED)
+                </span>
+                <div className="flex items-center gap-1 text-xs font-bold text-amber-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 shadow-md">
+                  <Star className="w-3.5 h-3.5 fill-amber-300" />
+                  {current.rating} Citizen Rating
+                </div>
               </div>
-            </div>
 
-            <div className="max-w-md">
-              <div className="text-xl sm:text-2xl font-extrabold text-white">
-                {current.afterTag}
+              <div className="max-w-md">
+                <div className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-md">
+                  {current.afterTag}
+                </div>
+                <p className="text-xs text-teal-200 mt-1 font-medium drop-shadow">
+                  Completed by {current.department} in {current.resolvedIn}
+                </p>
               </div>
-              <p className="text-xs text-teal-200 mt-1">
-                Completed by {current.department} in {current.resolvedIn}
-              </p>
             </div>
           </div>
 
           {/* "BEFORE" Layer (Clipped dynamically by slider position) */}
           <div
-            className={cn(
-              "absolute inset-0 bg-gradient-to-br flex flex-col justify-between p-6 sm:p-8 text-white",
-              current.beforeGradient
-            )}
+            className="absolute inset-0 select-none overflow-hidden"
             style={{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }}
           >
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/30 text-red-300 border border-red-400/30 backdrop-blur">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                BEFORE (CITIZEN REPORT)
-              </span>
-            </div>
-
-            <div className="max-w-md">
-              <div className="text-xl sm:text-2xl font-extrabold text-white">
-                {current.beforeTag}
+            <Image
+              src={current.beforeImage}
+              alt={current.beforeTag}
+              fill
+              sizes="(max-width: 768px) 100vw, 896px"
+              className="object-cover"
+              priority
+            />
+            {/* Dark gradient overlay for text readability */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/60 flex flex-col justify-between p-6 sm:p-8 text-white">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-600/85 text-white border border-red-400/50 backdrop-blur-md shadow-md">
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  BEFORE (CITIZEN REPORT)
+                </span>
               </div>
-              <p className="text-xs text-amber-200 mt-1">
-                Reported by citizen with GPS coordinates in {current.title}
-              </p>
+
+              <div className="max-w-md">
+                <div className="text-xl sm:text-2xl font-extrabold text-white drop-shadow-md">
+                  {current.beforeTag}
+                </div>
+                <p className="text-xs text-amber-200 mt-1 font-medium drop-shadow">
+                  Reported by citizen with GPS coordinates in {current.title}
+                </p>
+              </div>
             </div>
           </div>
 
