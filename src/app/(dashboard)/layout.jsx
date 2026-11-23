@@ -9,6 +9,7 @@ import { getDashboardPath } from "@/lib/authHelpers";
 import {
   LayoutDashboard,
   FilePlus2,
+  FileText,
   ListTodo,
   ShieldCheck,
   Building2,
@@ -53,6 +54,12 @@ export default function DashboardLayout({ children }) {
       name: "Citizen Portal",
       href: "/dashboard",
       icon: LayoutDashboard,
+      roles: ["citizen", "manager", "staff", "admin"],
+    },
+    {
+      name: "My Reports",
+      href: "/my-reports",
+      icon: FileText,
       roles: ["citizen", "manager", "staff", "admin"],
     },
     {
