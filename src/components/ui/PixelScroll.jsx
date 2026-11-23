@@ -6,7 +6,7 @@
  */
 
 import * as React from "react";
-import { useMotionValueEvent, useScroll } from "motion/react";
+import { useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import { cn } from "@/lib/utils";
 
 const EASE = {
@@ -47,20 +47,20 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
   {
     mode = "colors",
     from = "#F0FDFA", // Light CivicPulse surface teal
-    to = "#0F172A",   // Deep municipal slate
+    to = "#0B132B",   // Deep municipal slate
     layerA,
     layerB,
-    pixelSize = 18,
+    pixelSize = 16,
     gap = 1,
-    endAt = 0.85,
-    startAt = 0.08,
+    endAt = 0.55,
+    startAt = 0.0,
     direction = "center-out",
     pattern = "wave",
     intensity = 0.45,
     easing = "ease-in-out",
     accentShare = 0.3,
     accents = ["#14B8A6", "#06B6D4", "#F59E0B", "#22C55E"],
-    length = 1.6,
+    length = 2.2,
     container,
     children,
     label = "City Infrastructure Transformation",
@@ -72,6 +72,7 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
   const stage = React.useRef(null);
   const canvas = React.useRef(null);
   const [size, setSize] = React.useState({ w: 0, h: 0 });
+  const reducedMotion = useReducedMotion();
   const imgA = useImage(mode === "layers" ? layerA : undefined);
   const imgB = useImage(mode === "layers" ? layerB : undefined);
 
@@ -153,16 +154,6 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
       const W = size.w;
       const H = size.h;
 
-      const head = Math.max(0, Math.min(0.5, startAt));
-      const t =
-        head +
-        (1 - head) *
-          EASE[easing || "ease-in-out"](Math.max(0, Math.min(1, raw / Math.max(0.05, endAt))));
-
-      const band = 0.07;
-      const p = t * (1 + band * 2) - band;
-      const { step, cols, rows, th, pick } = grid;
-
       const fillA = () => {
         if (mode === "layers" && imgA) ctx.drawImage(imgA, ...cover(imgA, W, H));
         else {
@@ -179,9 +170,39 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
         }
       };
 
+      // Respect prefers-reduced-motion: instantly show target state past halfway
+      if (reducedMotion) {
+        ctx.clearRect(0, 0, W, H);
+        if (raw >= 0.5) drawB();
+        else fillA();
+        return;
+      }
+
+      // If scroll progress is at or past completion threshold, guarantee 100% full solid layer B
+      if (raw >= endAt) {
+        ctx.clearRect(0, 0, W, H);
+        drawB();
+        return;
+      }
+
+      // If scroll progress hasn't reached start threshold, guarantee initial layer A
+      if (raw <= startAt) {
+        ctx.clearRect(0, 0, W, H);
+        fillA();
+        return;
+      }
+
+      // Normalized transition progress between [startAt, endAt]
+      const span = Math.max(0.01, endAt - startAt);
+      const norm = Math.max(0, Math.min(1, (raw - startAt) / span));
+      const t = EASE[easing || "ease-in-out"](norm);
+
+      const band = 0.08;
+      const p = t * (1 + band * 2.2) - band;
+      const { step, cols, rows, th, pick } = grid;
+
       ctx.clearRect(0, 0, W, H);
       fillA();
-      if (t <= 0) return;
 
       const settled = new Path2D();
       const moving = new Path2D();
@@ -195,8 +216,9 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
           if (lead < -band) continue;
           const x = q * step;
           const y = r * step;
-          if (lead >= band) settled.rect(x, y, step, step);
-          else {
+          if (lead >= band) {
+            settled.rect(x, y, step, step);
+          } else {
             const s = pick[i];
             if (s < accentShare && accents.length) {
               accentCells.push([
@@ -226,7 +248,7 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
         ctx.fillRect(x, y, step - gap, step - gap);
       }
     },
-    [size, grid, easing, endAt, startAt, mode, imgA, imgB, from, to, gap, accentShare, accents]
+    [size, grid, easing, endAt, startAt, mode, imgA, imgB, from, to, gap, accentShare, accents, reducedMotion]
   );
 
   useMotionValueEvent(scrollYProgress, "change", draw);
@@ -256,7 +278,13 @@ export const PixelScroll = React.forwardRef(function PixelScroll(
         aria-label={label}
       >
         <canvas ref={canvas} aria-hidden className="absolute inset-0 size-full" />
-        {children && <div className="relative z-10 w-full h-full">{children}</div>}
+        {children && (
+          <div className="relative z-10 w-full h-full flex items-center justify-center pointer-events-none">
+            <div className="w-full pointer-events-auto">
+              {typeof children === "function" ? children({ scrollYProgress }) : children}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
