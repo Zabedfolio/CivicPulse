@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
 import { IssueCard } from "@/components/issues/IssueCard";
+import { ReportIssueModal } from "@/components/issues/ReportIssueModal";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   FileText,
@@ -38,6 +39,8 @@ export default function MyReportsPage() {
   const [issues, setIssues] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const user = session?.user;
 
@@ -94,7 +97,7 @@ export default function MyReportsPage() {
     return () => {
       isMounted = false;
     };
-  }, [user, authPending, activeStatus]);
+  }, [user, authPending, activeStatus, refreshTrigger]);
 
   // Client-side search filtering by title, address, or category
   const filteredIssues = useMemo(() => {
@@ -128,8 +131,8 @@ export default function MyReportsPage() {
         <MagneticButton
           variant="primary"
           size="md"
-          href="/issues/new"
-          className="text-xs font-bold shadow-md shadow-teal-500/10 shrink-0 self-start md:self-auto"
+          onClick={() => setIsModalOpen(true)}
+          className="text-xs font-bold shadow-md shadow-teal-500/10 shrink-0 self-start md:self-auto cursor-pointer"
         >
           <Plus className="w-4 h-4 mr-1.5" />
           Report New Issue
@@ -237,8 +240,8 @@ export default function MyReportsPage() {
             <MagneticButton
               variant="primary"
               size="md"
-              href="/issues/new"
-              className="text-xs font-bold shadow-md shadow-teal-500/10"
+              onClick={() => setIsModalOpen(true)}
+              className="text-xs font-bold shadow-md shadow-teal-500/10 cursor-pointer"
             >
               <Plus className="w-4 h-4 mr-1.5" />
               Report Your First Issue
@@ -253,6 +256,16 @@ export default function MyReportsPage() {
           ))}
         </div>
       )}
+
+      {/* Instant Report Modal */}
+      <ReportIssueModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => {
+          setIsModalOpen(false);
+          setRefreshTrigger((prev) => prev + 1);
+        }}
+      />
     </div>
   );
 }

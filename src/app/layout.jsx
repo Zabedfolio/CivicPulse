@@ -1,6 +1,5 @@
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
+import { LayoutShell } from "@/components/layout/LayoutShell";
 
 export const metadata = {
   title: "CivicPulse — Smarter Cities, Faster Fixes",
@@ -12,9 +11,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="h-full">
       <body className="min-h-full flex flex-col bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-100 antialiased">
-        <Navbar />
-        <main className="flex-1">{children}</main>
-        <Footer />
+        <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
   );

@@ -20,7 +20,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-export function IssueReportForm() {
+export function IssueReportForm({ onSuccess, onClose } = {}) {
   const router = useRouter();
 
   // Form State
@@ -171,12 +171,27 @@ export function IssueReportForm() {
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <Link href="/dashboard">
-            <MagneticButton variant="primary" size="md" className="font-bold">
-              <span>Track on Citizen Dashboard</span>
-              <ArrowRight className="w-4 h-4 ml-1.5" />
+          {onClose ? (
+            <MagneticButton
+              variant="primary"
+              size="md"
+              className="font-bold"
+              onClick={() => {
+                if (onSuccess) onSuccess(submittedIssue);
+                onClose();
+              }}
+            >
+              <span>Done &amp; Close</span>
+              <CheckCircle2 className="w-4 h-4 ml-1.5" />
             </MagneticButton>
-          </Link>
+          ) : (
+            <Link href="/dashboard">
+              <MagneticButton variant="primary" size="md" className="font-bold">
+                <span>Track on Citizen Dashboard</span>
+                <ArrowRight className="w-4 h-4 ml-1.5" />
+              </MagneticButton>
+            </Link>
+          )}
 
           <button
             type="button"
@@ -308,12 +323,22 @@ export function IssueReportForm() {
 
       {/* Submit Button */}
       <div className="pt-4 flex items-center justify-between border-t border-border">
-        <Link
-          href="/"
-          className="text-xs font-semibold text-muted hover:text-slate-900 dark:hover:text-white"
-        >
-          Cancel
-        </Link>
+        {onClose ? (
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-xs font-semibold text-muted hover:text-slate-900 dark:hover:text-white"
+          >
+            Cancel
+          </button>
+        ) : (
+          <Link
+            href="/"
+            className="text-xs font-semibold text-muted hover:text-slate-900 dark:hover:text-white"
+          >
+            Cancel
+          </Link>
+        )}
 
         <MagneticButton
           variant="primary"

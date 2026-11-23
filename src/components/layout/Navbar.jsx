@@ -1,14 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { TabBar } from "@/components/ui/TabBar";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { Menu, X, User, LogOut, Settings } from "lucide-react";
+import { ProfileMenu } from "@/components/ui/ProfileMenu";
+import { Menu, X, User } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { getDashboardPath } from "@/lib/authHelpers";
+import { motion, AnimatePresence } from "motion/react";
 
 const NAV_TABS = [
   { id: "home", label: "Home", icon: "home", href: "/" },
@@ -18,12 +20,29 @@ const NAV_TABS = [
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const profileMenuRef = useRef(null);
+
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
 
+  const user = session?.user;
+
+  // Click outside listener for ProfileMenu
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target)) {
+        setProfileMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const handleSignOut = async () => {
     try {
+      setProfileMenuOpen(false);
       await signOut({
         fetchOptions: {
           onSuccess: () => {
@@ -36,15 +55,14 @@ export function Navbar() {
     }
   };
 
-  const user = session?.user;
-
-  // Don't render floating public navbar on internal role-dashboard routes (which have their own sidebar)
+  // Double guard: suppress on dashboard routes
   const isDashboardRoute =
     pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/admin-dashboard") ||
-    pathname.startsWith("/department-dashboard") ||
+    pathname.startsWith("/my-reports") ||
     pathname.startsWith("/my-tasks") ||
-    pathname.startsWith("/issues");
+    pathname.startsWith("/department-dashboard") ||
+    pathname.startsWith("/admin-dashboard") ||
+    pathname.startsWith("/unauthorized");
 
   if (isDashboardRoute) {
     return null;
@@ -91,42 +109,82 @@ export function Navbar() {
           />
         </div>
 
-        {/* Action Buttons: Motion Brew MagneticButton */}
+        {/* Action Buttons: Motion Brew MagneticButton & ProfileMenu */}
         <div className="hidden md:flex items-center gap-2.5">
           {user ? (
-            <div className="flex items-center gap-2">
-              <Link
-                href={getDashboardPath(user.role)}
-                className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 px-2.5 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            <div className="relative" ref={profileMenuRef}>
+              <button
+                type="button"
+                onClick={() => setProfileMenuOpen((prev) => !prev)}
+                className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                aria-expanded={profileMenuOpen}
+                aria-haspopup="true"
               >
-                <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900 text-[#0D9488] flex items-center justify-center font-bold text-xs uppercase overflow-hidden">
+                <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900 text-[#0D9488] flex items-center justify-center font-bold text-xs uppercase overflow-hidden ring-2 ring-teal-500/20">
                   {user.image ? (
                     <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
                   ) : (
                     user.name?.charAt(0) || <User className="w-3.5 h-3.5" />
                   )}
                 </div>
-                <span>{user.name}</span>
+                <span className="max-w-[130px] truncate">{user.name}</span>
                 <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200 dark:bg-teal-950 dark:border-teal-800">
                   {user.role || "citizen"}
                 </span>
-              </Link>
-              <Link
-                href="/profile"
-                className="p-2 rounded-full text-slate-600 hover:text-teal-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
-                title="Account Settings & Profile"
-              >
-                <Settings className="w-4 h-4" />
-              </Link>
-              <MagneticButton
-                variant="ghost"
-                size="sm"
-                onClick={handleSignOut}
-                className="text-xs"
-              >
-                <LogOut className="w-3.5 h-3.5 mr-1" />
-                Sign Out
-              </MagneticButton>
+              </button>
+
+              {/* Animated Motion Brew ProfileMenu Dropdown */}
+              <AnimatePresence>
+                {profileMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: 10 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: 8 }}
+                    transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                    className="absolute right-0 top-full mt-3 z-50 origin-top-right shadow-2xl rounded-3xl"
+                  >
+                    <ProfileMenu
+                      name={user.name || "Civic Citizen"}
+                      email={user.email}
+                      avatar={
+                        user.image ||
+                        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=96&h=96&fit=crop&crop=faces"
+                      }
+                      groups={[
+                        [
+                          {
+                            label: "Dashboard",
+                            icon: "home",
+                            onSelect: () => {
+                              setProfileMenuOpen(false);
+                              router.push(getDashboardPath(user.role));
+                            },
+                          },
+                          {
+                            label: "My Reports",
+                            icon: "folder",
+                            onSelect: () => {
+                              setProfileMenuOpen(false);
+                              router.push("/my-reports");
+                            },
+                          },
+                        ],
+                        [
+                          {
+                            label: "Account & Profile",
+                            icon: "users",
+                            onSelect: () => {
+                              setProfileMenuOpen(false);
+                              router.push("/profile");
+                            },
+                          },
+                        ],
+                      ]}
+                      onSignOut={handleSignOut}
+                    />
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           ) : (
             <>
@@ -198,11 +256,17 @@ export function Navbar() {
                   Signed in as <span className="font-bold">{user.email}</span> ({user.role})
                 </Link>
                 <Link
+                  href="/my-reports"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="text-xs font-semibold text-slate-700 dark:text-slate-300 py-1"
+                >
+                  My Reports
+                </Link>
+                <Link
                   href="/profile"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 dark:text-teal-400 py-1 hover:underline"
+                  className="text-xs font-semibold text-teal-600 dark:text-teal-400 py-1"
                 >
-                  <Settings className="w-3.5 h-3.5" />
                   Account Settings &amp; Profile
                 </Link>
                 <MagneticButton
@@ -211,7 +275,6 @@ export function Navbar() {
                   className="w-full justify-center"
                   onClick={handleSignOut}
                 >
-                  <LogOut className="w-3.5 h-3.5 mr-1.5" />
                   Sign Out
                 </MagneticButton>
               </>

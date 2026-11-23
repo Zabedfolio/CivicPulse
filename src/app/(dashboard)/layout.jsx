@@ -1,39 +1,80 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
-import { getDashboardPath } from "@/lib/authHelpers";
-import {
-  LayoutDashboard,
-  FilePlus2,
-  FileText,
-  ListTodo,
-  ShieldCheck,
-  Building2,
-  Users,
-  LogOut,
-  Menu,
-  X,
-  ChevronRight,
-  User,
-  Bell,
-  MapPin,
-  BarChart3,
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/Button";
+import { SidebarNav } from "@/components/ui/SidebarNav";
+import { ReportIssueModal } from "@/components/issues/ReportIssueModal";
+import { LogOut } from "lucide-react";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
   const user = session?.user;
   const role = user?.role || "citizen";
+
+  // Determine active item id in SidebarNav
+  let activeId = "dashboard";
+  if (pathname.startsWith("/my-reports")) activeId = "my-reports";
+  else if (pathname.startsWith("/my-tasks")) activeId = "my-tasks";
+  else if (pathname.startsWith("/department-dashboard")) activeId = "department-dashboard";
+  else if (pathname.startsWith("/admin-dashboard")) activeId = "admin-dashboard";
+
+  // Build role-tailored navigation sections
+  const sections = [
+    {
+      label: "Citizen Services",
+      items: [
+        { id: "dashboard", label: "Citizen Portal", icon: "home" },
+        { id: "my-reports", label: "My Reports", icon: "projects" },
+        { id: "report-issue", label: "Report Issue", icon: "explore", tag: "Modal" },
+      ],
+    },
+  ];
+
+  if (role === "staff" || role === "admin") {
+    sections.push({
+      label: "Field Operations",
+      items: [
+        { id: "my-tasks", label: "Field Staff Tasks", icon: "workflows" },
+      ],
+    });
+  }
+
+  if (role === "manager" || role === "admin") {
+    sections.push({
+      label: "Management",
+      items: [
+        { id: "department-dashboard", label: "Department Triage", icon: "analytics" },
+      ],
+    });
+  }
+
+  if (role === "admin") {
+    sections.push({
+      label: "Governance",
+      items: [
+        { id: "admin-dashboard", label: "Admin Control", icon: "team" },
+      ],
+    });
+  }
+
+  const handleNavigate = (id) => {
+    if (id === "report-issue") {
+      setIsReportModalOpen(true);
+      return;
+    }
+    if (id === "dashboard") router.push("/dashboard");
+    else if (id === "my-reports") router.push("/my-reports");
+    else if (id === "my-tasks") router.push("/my-tasks");
+    else if (id === "department-dashboard") router.push("/department-dashboard");
+    else if (id === "admin-dashboard") router.push("/admin-dashboard");
+  };
 
   const handleSignOut = async () => {
     try {
@@ -49,163 +90,66 @@ export default function DashboardLayout({ children }) {
     }
   };
 
-  const navLinks = [
-    {
-      name: "Citizen Portal",
-      href: "/dashboard",
-      icon: LayoutDashboard,
-      roles: ["citizen", "manager", "staff", "admin"],
-    },
-    {
-      name: "My Reports",
-      href: "/my-reports",
-      icon: FileText,
-      roles: ["citizen", "manager", "staff", "admin"],
-    },
-    {
-      name: "Report Issue",
-      href: "/issues/new",
-      icon: FilePlus2,
-      roles: ["citizen", "manager", "staff", "admin"],
-    },
-    {
-      name: "Field Staff Tasks",
-      href: "/my-tasks",
-      icon: ListTodo,
-      roles: ["staff", "admin"],
-    },
-    {
-      name: "Department Triage",
-      href: "/department-dashboard",
-      icon: Building2,
-      roles: ["manager", "admin"],
-    },
-    {
-      name: "Admin Control Center",
-      href: "/admin-dashboard",
-      icon: ShieldCheck,
-      roles: ["admin"],
-    },
-  ];
-
-  const visibleLinks = navLinks.filter((link) => link.roles.includes(role));
+  const logoNode = (
+    <div className="relative flex items-center justify-center size-8 rounded-xl bg-teal-50 dark:bg-teal-950/80 p-0.5 border border-teal-200/60 dark:border-teal-800/60">
+      <Image
+        src="/logo.png"
+        alt="CivicPulse Logo"
+        width={28}
+        height={28}
+        className="size-7 object-contain rounded-lg"
+      />
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col md:flex-row">
-      {/* Mobile Header Bar */}
-      <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-border">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/logo.png"
-            alt="CivicPulse Logo"
-            width={32}
-            height={32}
-            className="w-8 h-8 object-contain rounded-lg"
-          />
-          <span className="font-bold text-slate-900 dark:text-white">
-            Civic<span className="text-[#0D9488]">Pulse</span>
-          </span>
-        </Link>
-        <button
-          type="button"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 text-slate-700 dark:text-slate-200"
-          aria-label="Toggle Navigation"
-        >
-          {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col sm:flex-row p-2 sm:p-4 gap-4">
+      {/* Motion Brew SidebarNav */}
+      <div className="shrink-0 flex flex-col justify-between">
+        <SidebarNav
+          brand="CivicPulse"
+          logo={logoNode}
+          sections={sections}
+          value={activeId}
+          onNavigate={handleNavigate}
+          user={{
+            name: user?.name || "Civic Citizen",
+            email: user?.email || `${role}@civicpulse.gov`,
+            avatar:
+              user?.image ||
+              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=96&h=96&fit=crop&crop=faces",
+          }}
+          onSettings={() => router.push("/profile")}
+          className="shadow-xl border border-slate-200/80 dark:border-slate-800"
+        />
 
-      {/* Sidebar Navigation */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-900 border-r border-border flex flex-col justify-between transition-transform duration-200 md:translate-x-0 md:static md:h-screen md:sticky md:top-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}
-      >
-        <div>
-          {/* Logo Header */}
-          <div className="p-6 border-b border-border flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Image
-                src="/logo.png"
-                alt="CivicPulse Logo"
-                width={36}
-                height={36}
-                className="w-9 h-9 object-contain rounded-xl"
-              />
-              <div className="flex flex-col leading-tight">
-                <span className="font-bold text-base text-slate-900 dark:text-white tracking-tight">
-                  Civic<span className="text-[#0D9488]">Pulse</span>
-                </span>
-                <span className="text-[9px] uppercase font-semibold tracking-wider text-slate-400">
-                  {role} workspace
-                </span>
-              </div>
-            </Link>
-          </div>
-
-          {/* Navigation Links */}
-          <nav className="p-4 space-y-1.5">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 px-3 py-2">
-              Navigation
-            </div>
-            {visibleLinks.map((link) => {
-              const Icon = link.icon;
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setSidebarOpen(false)}
-                  className={cn(
-                    "flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-colors",
-                    isActive
-                      ? "bg-teal-50 text-[#0D9488] font-bold dark:bg-teal-950/60 dark:text-teal-300"
-                      : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
-                  )}
-                >
-                  <Icon className={cn("w-4 h-4 shrink-0", isActive && "text-[#0D9488]")} />
-                  <span>{link.name}</span>
-                </Link>
-              );
-            })}
-          </nav>
-        </div>
-
-        {/* User Card & Logout Footer */}
-        <div className="p-4 border-t border-border">
-          <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-8 h-8 rounded-full bg-teal-100 dark:bg-teal-900 text-[#0D9488] flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                {user?.name?.charAt(0) || <User className="w-4 h-4" />}
-              </div>
-              <div className="truncate">
-                <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
-                  {user?.name || "Civic User"}
-                </div>
-                <div className="text-[10px] text-muted uppercase font-semibold">
-                  {role}
-                </div>
-              </div>
-            </div>
-          </div>
-
+        {/* Desktop Quick Sign Out Pill below sidebar */}
+        <div className="hidden sm:block mt-2 px-2">
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors border border-transparent hover:border-rose-200 dark:hover:border-rose-900 cursor-pointer"
           >
-            <LogOut className="w-3.5 h-3.5" />
+            <LogOut className="size-3.5" />
             <span>Sign Out</span>
           </button>
         </div>
-      </aside>
+      </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+      <main className="flex-1 min-w-0 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-4 sm:p-6 lg:p-8 overflow-y-auto">
         {children}
       </main>
+
+      {/* Animated Report Issue Modal */}
+      <ReportIssueModal
+        isOpen={isReportModalOpen}
+        onClose={() => setIsReportModalOpen(false)}
+        onSuccess={() => {
+          setIsReportModalOpen(false);
+          router.push("/my-reports");
+        }}
+      />
     </div>
   );
 }
