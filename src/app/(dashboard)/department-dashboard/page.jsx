@@ -1,166 +1,230 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import React, { useState, useEffect, useCallback } from "react";
 import { RoleGate } from "@/components/layout/RoleGate";
 import { useSession } from "@/lib/auth-client";
+import { IssueDataTable } from "@/components/management/IssueDataTable";
+import { IssueFilterBar } from "@/components/management/IssueFilterBar";
+import { DebouncedSearchInput } from "@/components/management/DebouncedSearchInput";
+import { PaginationControl } from "@/components/ui/PaginationControl";
 import {
   Building2,
-  Users,
-  CheckCircle2,
   Clock,
   AlertTriangle,
-  ArrowRight,
-  ShieldAlert,
   BarChart3,
-  Search,
-  Filter,
+  CheckCircle2,
+  ListFilter,
+  Sparkles,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 
 export default function DepartmentDashboardPage() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // Placeholder Department Incident Queue
-  const incomingQueue = [
-    {
-      id: "CP-2026-4912",
-      title: "Uncovered drain culvert collapse near Agrabad Market",
-      reporter: "Rahim Chowdhury",
-      reportedAt: "25 mins ago",
-      priority: "CRITICAL",
-      priorityColor: "bg-red-50 text-red-700 border-red-200 dark:bg-red-950 dark:text-red-300",
-      status: "Under Review",
-      slaHoursLeft: "11h remaining",
-    },
-    {
-      id: "CP-2026-4908",
-      title: "Broken asphalt depression on Port Access Road Lane 2",
-      reporter: "Nusrat Jahan",
-      reportedAt: "1 hour ago",
-      priority: "HIGH",
-      priorityColor: "bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950 dark:text-amber-300",
-      status: "Under Review",
-      slaHoursLeft: "23h remaining",
-    },
-    {
-      id: "CP-2026-4899",
-      title: "Submerged sidewalk tile hazards along GEC Circle",
-      reporter: "Tanvir Ahmed",
-      reportedAt: "3 hours ago",
-      priority: "MEDIUM",
-      priorityColor: "bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950 dark:text-blue-300",
-      status: "Under Review",
-      slaHoursLeft: "45h remaining",
-    },
-  ];
+  // Filter & Search states
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("all");
+  const [priority, setPriority] = useState("all");
+  const [category, setCategory] = useState("All Categories");
+  const [sortOption, setSortOption] = useState("createdAt_desc");
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Issues data & loading
+  const [issues, setIssues] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState("");
+
+  const fetchDepartmentIssues = useCallback(async () => {
+    setIsLoading(true);
+    setFetchError("");
+
+    try {
+      const params = new URLSearchParams();
+      params.set("page", page.toString());
+      params.set("limit", pageSize.toString());
+
+      if (search.trim()) params.set("search", search.trim());
+      if (status !== "all") params.set("status", status);
+      if (priority !== "all") params.set("priority", priority);
+      if (category !== "All Categories") params.set("category", category);
+
+      // Parse sort option (e.g., 'createdAt_desc')
+      const [sortBy, sortOrder] = sortOption.split("_");
+      params.set("sortBy", sortBy || "createdAt");
+      params.set("sortOrder", sortOrder || "desc");
+
+      const res = await fetch(`http://localhost:5000/api/v1/issues?${params.toString()}`, {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to load department issues.");
+      }
+
+      const json = await res.json();
+      setIssues(json.data?.issues || []);
+      if (json.pagination) {
+        setTotalItems(json.pagination.total || 0);
+        setTotalPages(json.pagination.totalPages || 1);
+      }
+    } catch (err) {
+      console.warn("Department issues fetch notice:", err.message);
+      setFetchError(err.message || "Failed to connect to municipal dispatch server.");
+      setIssues([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, pageSize, search, status, priority, category, sortOption]);
+
+  // Trigger fetch whenever filter/page changes
+  useEffect(() => {
+    fetchDepartmentIssues();
+  }, [fetchDepartmentIssues]);
+
+  // Reset page to 1 whenever search or filters change
+  const handleSearchChange = (newSearch) => {
+    setSearch(newSearch);
+    setPage(1);
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus);
+    setPage(1);
+  };
+
+  const handlePriorityChange = (newPriority) => {
+    setPriority(newPriority);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (newCategory) => {
+    setCategory(newCategory);
+    setPage(1);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSortOption(newSort);
+    setPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setStatus("all");
+    setPriority("all");
+    setCategory("All Categories");
+    setSortOption("createdAt_desc");
+    setPage(1);
+  };
 
   return (
     <RoleGate allowedRoles={["manager", "admin"]}>
-      <div className="max-w-6xl mx-auto space-y-8">
-        {/* Manager Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-teal-500/10 border border-amber-200 dark:border-amber-900/60">
+      <div className="max-w-6xl mx-auto space-y-6 pb-12">
+        {/* Department Manager Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-teal-500/10 via-emerald-500/5 to-teal-500/10 border border-teal-200/80 dark:border-teal-900/60 shadow-xs">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 mb-2">
-              <Building2 className="w-3.5 h-3.5" />
-              <span>Department Operations & Triage</span>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-100/80 text-teal-800 dark:bg-teal-950 dark:text-teal-300 mb-2">
+              <Building2 className="size-3.5" />
+              <span>Department Operations &amp; Triage Board</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">
-              {user?.department || "Roads & Civil Infrastructure"} Division
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              {user?.department?.name || "Municipal Infrastructure"} Division
             </h1>
-            <p className="mt-1 text-sm text-muted">
-              Logged in as Manager: <span className="font-semibold">{user?.name}</span> ({user?.email})
+            <p className="mt-1 text-xs sm:text-sm text-muted">
+              Role: <span className="font-semibold text-slate-800 dark:text-slate-200 uppercase">{user?.role}</span> · Logged in as{" "}
+              <span className="font-semibold text-slate-800 dark:text-slate-200">{user?.name}</span> ({user?.email})
             </p>
           </div>
-          <div className="flex items-center gap-3">
-            <Button variant="outline" size="md">
-              <BarChart3 className="w-4 h-4 mr-2" />
-              SLA Analytics
-            </Button>
+
+          <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 shadow-xs">
+              <Sparkles className="size-3.5 text-teal-600" />
+              <span>Auto SLA Audited</span>
+            </span>
           </div>
         </div>
 
         {/* Operational KPI Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">Unassigned Triage</div>
-            <div className="text-2xl font-extrabold text-amber-600 mt-1">3</div>
-            <p className="text-[11px] text-muted mt-1">Requires crew assignment</p>
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-wider">Total Reports</div>
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
+              {totalItems}
+            </div>
+            <p className="text-[10px] text-muted mt-0.5">Assigned to department</p>
           </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">Active Dispatches</div>
-            <div className="text-2xl font-extrabold text-purple-600 mt-1">8</div>
-            <p className="text-[11px] text-muted mt-1">Crews currently on site</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Pending Review</div>
+            <div className="text-2xl font-extrabold text-amber-600 mt-1">
+              {issues.filter((i) => i.status === "Submitted" || i.status === "Under Review").length}
+            </div>
+            <p className="text-[10px] text-muted mt-0.5">Requires triage / verification</p>
           </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">On-Time SLA Rate</div>
-            <div className="text-2xl font-extrabold text-emerald-600 mt-1">98.2%</div>
-            <p className="text-[11px] text-muted mt-1">Within department target</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">Active Crews</div>
+            <div className="text-2xl font-extrabold text-purple-600 mt-1">
+              {issues.filter((i) => i.status === "In Progress" || i.status === "Assigned").length}
+            </div>
+            <p className="text-[10px] text-muted mt-0.5">Dispatched on site</p>
           </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">Active Field Staff</div>
-            <div className="text-2xl font-extrabold text-[#0D9488] mt-1">14</div>
-            <p className="text-[11px] text-muted mt-1">Available for dispatch</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Resolved</div>
+            <div className="text-2xl font-extrabold text-emerald-600 mt-1">
+              {issues.filter((i) => i.status === "Resolved" || i.status === "Closed").length}
+            </div>
+            <p className="text-[10px] text-muted mt-0.5">Resolution verified</p>
           </div>
         </div>
 
-        {/* Incident Triage Queue */}
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-border shadow-sm overflow-hidden">
-          <div className="p-5 sm:p-6 border-b border-border flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Incoming Citizen Incident Queue
-              </h2>
-              <p className="text-xs text-muted">
-                Review incoming citizen reports, check for 50m duplicates, and assign field maintenance crews
-              </p>
-            </div>
+        {/* Triage Search & Filter Control Panel */}
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200">
-                3 Pending Review
-              </span>
+              <ListFilter className="size-4 text-teal-600" />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                Issue Triage Controls &amp; Search
+              </h2>
             </div>
+            <DebouncedSearchInput
+              value={search}
+              onChange={handleSearchChange}
+              placeholder="Search reports by title or ward address..."
+            />
           </div>
 
-          <div className="divide-y divide-border">
-            {incomingQueue.map((item) => (
-              <div key={item.id} className="p-5 sm:p-6 hover:bg-slate-50/50 dark:hover:bg-slate-800/40 transition-colors">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-slate-500">
-                        #{item.id}
-                      </span>
-                      <span className={`text-[10px] uppercase font-bold px-2 py-0.5 rounded-full border ${item.priorityColor}`}>
-                        {item.priority}
-                      </span>
-                      <span className="text-xs text-muted">
-                        Reported by {item.reporter} ({item.reportedAt})
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                      {item.title}
-                    </h3>
-                    <div className="flex items-center gap-2 text-xs text-amber-600 font-semibold pt-0.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>SLA Window: {item.slaHoursLeft}</span>
-                    </div>
-                  </div>
+          <IssueFilterBar
+            selectedStatus={status}
+            onStatusChange={handleStatusChange}
+            selectedPriority={priority}
+            onPriorityChange={handlePriorityChange}
+            selectedCategory={category}
+            onCategoryChange={handleCategoryChange}
+            sortOption={sortOption}
+            onSortChange={handleSortChange}
+            onReset={handleResetFilters}
+          />
+        </div>
 
-                  <div className="flex items-center gap-2 shrink-0">
-                    <Button variant="outline" size="sm">
-                      Check 50m Duplicate
-                    </Button>
-                    <Button variant="primary" size="sm">
-                      Assign Field Crew
-                      <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+        {/* Responsive Motion Brew IssueDataTable */}
+        <div className="space-y-3">
+          <IssueDataTable issues={issues} isLoading={isLoading} />
+
+          {/* Spring Pagination Controls */}
+          <PaginationControl
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={(p) => setPage(p)}
+            onPageSizeChange={(sz) => {
+              setPageSize(sz);
+              setPage(1);
+            }}
+          />
         </div>
       </div>
     </RoleGate>

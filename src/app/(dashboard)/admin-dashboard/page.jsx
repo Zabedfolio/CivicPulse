@@ -1,9 +1,12 @@
 "use client";
 
-import React from "react";
-import Link from "next/link";
+import React, { useState, useEffect, useCallback } from "react";
 import { RoleGate } from "@/components/layout/RoleGate";
 import { useSession } from "@/lib/auth-client";
+import { IssueDataTable } from "@/components/management/IssueDataTable";
+import { IssueFilterBar } from "@/components/management/IssueFilterBar";
+import { DebouncedSearchInput } from "@/components/management/DebouncedSearchInput";
+import { PaginationControl } from "@/components/ui/PaginationControl";
 import {
   ShieldCheck,
   Building2,
@@ -12,8 +15,8 @@ import {
   AlertTriangle,
   FileText,
   BarChart3,
-  Server,
-  Settings,
+  ListFilter,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -21,116 +24,224 @@ export default function AdminDashboardPage() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // Placeholder municipal system metrics
-  const departmentHealth = [
-    { name: "Road Maintenance Engineering", sla: "96.4%", activeIssues: 28, staff: 18, status: "Healthy" },
-    { name: "Electrical & Public Lighting", sla: "98.8%", activeIssues: 12, staff: 14, status: "Optimal" },
-    { name: "Drainage & Stormwater Board", sla: "91.2%", activeIssues: 45, staff: 22, status: "High Load" },
-    { name: "Waste Management Directorate", sla: "97.5%", activeIssues: 19, staff: 26, status: "Healthy" },
-  ];
+  // Filter & Search states
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState("all");
+  const [priority, setPriority] = useState("all");
+  const [category, setCategory] = useState("All Categories");
+  const [department, setDepartment] = useState("all");
+  const [sortOption, setSortOption] = useState("createdAt_desc");
+
+  // Pagination states
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Issues & departments data
+  const [issues, setIssues] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Fetch departments for dropdown
+  useEffect(() => {
+    fetch("http://localhost:5000/api/v1/departments", { credentials: "include" })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data?.departments) {
+          setDepartments(json.data.departments);
+        }
+      })
+      .catch((err) => console.warn("Failed to load departments:", err));
+  }, []);
+
+  // Fetch city-wide issues
+  const fetchAllIssues = useCallback(async () => {
+    setIsLoading(true);
+
+    try {
+      const params = new URLSearchParams();
+      params.set("page", page.toString());
+      params.set("limit", pageSize.toString());
+
+      if (search.trim()) params.set("search", search.trim());
+      if (status !== "all") params.set("status", status);
+      if (priority !== "all") params.set("priority", priority);
+      if (category !== "All Categories") params.set("category", category);
+      if (department !== "all") params.set("department", department);
+
+      const [sortBy, sortOrder] = sortOption.split("_");
+      params.set("sortBy", sortBy || "createdAt");
+      params.set("sortOrder", sortOrder || "desc");
+
+      const res = await fetch(`http://localhost:5000/api/v1/issues?${params.toString()}`, {
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to load municipal issues.");
+      }
+
+      const json = await res.json();
+      setIssues(json.data?.issues || []);
+      if (json.pagination) {
+        setTotalItems(json.pagination.total || 0);
+        setTotalPages(json.pagination.totalPages || 1);
+      }
+    } catch (err) {
+      console.warn("Admin issues fetch notice:", err.message);
+      setIssues([]);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, pageSize, search, status, priority, category, department, sortOption]);
+
+  useEffect(() => {
+    fetchAllIssues();
+  }, [fetchAllIssues]);
+
+  const handleSearchChange = (newSearch) => {
+    setSearch(newSearch);
+    setPage(1);
+  };
+
+  const handleStatusChange = (newStatus) => {
+    setStatus(newStatus);
+    setPage(1);
+  };
+
+  const handlePriorityChange = (newPriority) => {
+    setPriority(newPriority);
+    setPage(1);
+  };
+
+  const handleCategoryChange = (newCategory) => {
+    setCategory(newCategory);
+    setPage(1);
+  };
+
+  const handleDepartmentChange = (newDept) => {
+    setDepartment(newDept);
+    setPage(1);
+  };
+
+  const handleSortChange = (newSort) => {
+    setSortOption(newSort);
+    setPage(1);
+  };
+
+  const handleResetFilters = () => {
+    setSearch("");
+    setStatus("all");
+    setPriority("all");
+    setCategory("All Categories");
+    setDepartment("all");
+    setSortOption("createdAt_desc");
+    setPage(1);
+  };
 
   return (
     <RoleGate allowedRoles={["admin"]}>
-      <div className="max-w-6xl mx-auto space-y-8">
+      <div className="max-w-6xl mx-auto space-y-6 pb-12">
         {/* Admin Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 text-white border border-slate-700 shadow-xl">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-500/20 text-teal-300 border border-teal-400/30 mb-2">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Super Administrator Portal</span>
+              <ShieldCheck className="size-3.5" />
+              <span>Super Administrator Command Center</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              City Infrastructure Command Center
+              City Infrastructure Governance Portal
             </h1>
-            <p className="mt-1 text-sm text-slate-300">
-              Admin: <span className="font-semibold text-white">{user?.name}</span> ({user?.email}) · Full Municipal Governance & SLA Audits
+            <p className="mt-1 text-xs sm:text-sm text-slate-300">
+              Admin: <span className="font-semibold text-white">{user?.name}</span> ({user?.email}) · City-Wide Real-Time Audit &amp; Cross-Department Triage
             </p>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="bg-white/10 text-white border-white/20 hover:bg-white/20">
-              <Settings className="w-4 h-4 mr-2" />
-              System Config
-            </Button>
+          <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-white/10 text-teal-200 border border-white/20">
+              <Sparkles className="size-3.5 text-teal-400" />
+              <span>Full Municipal Authority</span>
+            </span>
           </div>
         </div>
 
-        {/* Global Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">Total Registered Citizens</div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">4,850</div>
-            <p className="text-[11px] text-emerald-600 font-semibold mt-1">+142 this week</p>
+        {/* Global Statistics Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-muted uppercase tracking-wider">Total Reports</div>
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{totalItems}</div>
+            <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Across all 41 wards</p>
           </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">Municipal Departments</div>
-            <div className="text-2xl font-extrabold text-[#0D9488] mt-1">6</div>
-            <p className="text-[11px] text-muted mt-1">Active SLA monitored</p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-[#0D9488] uppercase tracking-wider">Active Divisions</div>
+            <div className="text-2xl font-extrabold text-[#0D9488] mt-1">{departments.length || 6}</div>
+            <p className="text-[10px] text-muted mt-0.5">Engineering departments</p>
           </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">City-Wide On-Time SLA</div>
-            <div className="text-2xl font-extrabold text-emerald-600 mt-1">94.8%</div>
-            <p className="text-[11px] text-muted mt-1">Target: &gt; 90%</p>
-          </div>
-          <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-sm">
-            <div className="text-xs font-semibold text-muted uppercase">Active Field Staff</div>
-            <div className="text-2xl font-extrabold text-purple-600 mt-1">80</div>
-            <p className="text-[11px] text-muted mt-1">Across 41 wards</p>
-          </div>
-        </div>
-
-        {/* Department Health Overview */}
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-border shadow-sm overflow-hidden">
-          <div className="p-5 sm:p-6 border-b border-border flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                Department SLA Audit & Workload
-              </h2>
-              <p className="text-xs text-muted">
-                Real-time performance metrics and active workload per municipal engineering division
-              </p>
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Unverified Queue</div>
+            <div className="text-2xl font-extrabold text-amber-600 mt-1">
+              {issues.filter((i) => i.status === "Submitted").length}
             </div>
-            <Button variant="outline" size="sm">
-              <BarChart3 className="w-4 h-4 mr-1" />
-              Export SLA Report
-            </Button>
+            <p className="text-[10px] text-muted mt-0.5">Pending initial review</p>
+          </div>
+          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">In Progress</div>
+            <div className="text-2xl font-extrabold text-purple-600 mt-1">
+              {issues.filter((i) => i.status === "In Progress").length}
+            </div>
+            <p className="text-[10px] text-muted mt-0.5">Under field repair</p>
+          </div>
+        </div>
+
+        {/* Triage Search & Filter Control Panel */}
+        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+            <div className="flex items-center gap-2">
+              <ListFilter className="size-4 text-teal-600" />
+              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                City-Wide Incident Triage Controls
+              </h2>
+            </div>
+            <DebouncedSearchInput
+              value={search}
+              onChange={handleSearchChange}
+              placeholder="Search reports by title, ticket, or ward..."
+            />
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/50 text-xs font-bold text-muted uppercase border-b border-border">
-                <tr>
-                  <th className="px-6 py-3.5">Department</th>
-                  <th className="px-6 py-3.5">SLA Compliance</th>
-                  <th className="px-6 py-3.5">Active Incidents</th>
-                  <th className="px-6 py-3.5">Staff Count</th>
-                  <th className="px-6 py-3.5">Operating Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border">
-                {departmentHealth.map((dept, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
-                      {dept.name}
-                    </td>
-                    <td className="px-6 py-4 font-mono font-bold text-emerald-600">
-                      {dept.sla}
-                    </td>
-                    <td className="px-6 py-4 font-medium text-slate-700 dark:text-slate-300">
-                      {dept.activeIssues} open
-                    </td>
-                    <td className="px-6 py-4 font-medium text-slate-700 dark:text-slate-300">
-                      {dept.staff} deployed
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold bg-teal-50 text-[#0D9488] border border-teal-200 dark:bg-teal-950 dark:border-teal-800">
-                        {dept.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <IssueFilterBar
+            selectedStatus={status}
+            onStatusChange={handleStatusChange}
+            selectedPriority={priority}
+            onPriorityChange={handlePriorityChange}
+            selectedCategory={category}
+            onCategoryChange={handleCategoryChange}
+            selectedDepartment={department}
+            onDepartmentChange={handleDepartmentChange}
+            departments={departments}
+            showDepartmentFilter={true}
+            sortOption={sortOption}
+            onSortChange={handleSortChange}
+            onReset={handleResetFilters}
+          />
+        </div>
+
+        {/* Motion Brew IssueDataTable */}
+        <div className="space-y-3">
+          <IssueDataTable issues={issues} isLoading={isLoading} />
+
+          {/* Spring Pagination Controls */}
+          <PaginationControl
+            currentPage={page}
+            totalPages={totalPages}
+            totalItems={totalItems}
+            pageSize={pageSize}
+            onPageChange={(p) => setPage(p)}
+            onPageSizeChange={(sz) => {
+              setPageSize(sz);
+              setPage(1);
+            }}
+          />
         </div>
       </div>
     </RoleGate>
