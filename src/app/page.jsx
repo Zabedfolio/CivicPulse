@@ -2,12 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { motion, useTransform } from "motion/react";
+import { motion } from "motion/react";
 import { BlurText } from "@/components/ui/BlurText";
 import { MotionCard } from "@/components/ui/MotionCard";
 import { Button } from "@/components/ui/Button";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { PixelScroll } from "@/components/ui/PixelScroll";
 import { cn } from "@/lib/utils";
 
 // Home Components
@@ -155,70 +154,6 @@ const LIFECYCLE_STEPS = [
   },
 ];
 
-function PixelScrollytellingOverlay({ scrollYProgress }) {
-  // Phase 1 (0 to 35%): Intro banner fades out as dark pixel wave spreads
-  const phase1Opacity = useTransform(scrollYProgress, [0, 0.35], [1, 0]);
-  const phase1Y = useTransform(scrollYProgress, [0, 0.35], [0, -20]);
-
-  // Phase 2 (45% to 60%): High-tech audit card fades in and locks solid through 100%
-  const phase2Opacity = useTransform(scrollYProgress, [0.45, 0.6], [0, 1]);
-  const phase2Y = useTransform(scrollYProgress, [0.45, 0.6], [20, 0]);
-  const phase2Scale = useTransform(scrollYProgress, [0.45, 0.6], [0.96, 1]);
-
-  return (
-    <div className="relative w-full max-w-4xl mx-auto px-4 text-center">
-      {/* Phase 1: Initial state before pixel sweep */}
-      <motion.div
-        style={{ opacity: phase1Opacity, y: phase1Y }}
-        className="flex flex-col items-center justify-center pointer-events-none"
-      >
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold bg-teal-100/90 text-teal-800 dark:bg-teal-950/80 dark:text-teal-200 border border-teal-300 dark:border-teal-700 mb-3 shadow-xs backdrop-blur-sm">
-          <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
-          <span>Municipal Infrastructure Transition</span>
-        </div>
-        <h2 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          From Broken Streets to Verified Repairs
-        </h2>
-        <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 max-w-lg mx-auto font-medium">
-          Scroll downward to watch civic infrastructure transition into verified engineering audits.
-        </p>
-      </motion.div>
-
-      {/* Phase 2: Completed High-Tech Audit State (settled solid from 55% onward) */}
-      <motion.div
-        style={{ opacity: phase2Opacity, y: phase2Y, scale: phase2Scale }}
-        className="absolute inset-0 flex flex-col items-center justify-center pointer-events-auto"
-      >
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 mb-3 backdrop-blur-md shadow-[0_0_20px_rgba(16,185,129,0.25)]">
-          <span className="w-2 h-2 rounded-full bg-emerald-400" />
-          <span>✓ 100% Verification Audit Active</span>
-        </div>
-        <h2 className="text-3xl sm:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
-          Public Proof. Zero Paperwork.
-        </h2>
-        <p className="mt-3 text-xs sm:text-base text-teal-200 max-w-xl mx-auto drop-shadow-md">
-          Every repaired road, replaced streetlight, and cleared drain is backed by geo-tagged photographic evidence.
-        </p>
-        <div className="mt-5 flex flex-wrap items-center justify-center gap-2.5">
-          <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 text-white border border-white/20 backdrop-blur-sm">
-            ⚡ &lt; 48h Average Triage
-          </span>
-          <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-white/10 text-white border border-white/20 backdrop-blur-sm">
-            📸 Dual Photo Audit Trail
-          </span>
-          <span className="px-3 py-1 rounded-lg text-xs font-semibold bg-teal-400/20 text-teal-200 border border-teal-400/30 backdrop-blur-sm">
-            ★ 4.9 Citizen Satisfaction
-          </span>
-        </div>
-        <div className="mt-5 flex items-center gap-1.5 text-xs text-teal-300 font-medium">
-          <span>Compare live before &amp; after proofs below</span>
-          <span className="animate-bounce">↓</span>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
 export default function HomePage() {
   const [activeStep, setActiveStep] = useState(0);
 
@@ -305,28 +240,6 @@ export default function HomePage() {
             </div>
           </MotionCard>
         </div>
-      </section>
-
-      {/* SCROLL-DRIVEN PIXEL TRANSITION (Motion Brew PixelScroll) */}
-      <section className="w-full overflow-hidden my-0">
-        <PixelScroll
-          from="#F0FDFA"
-          to="#0B132B"
-          pixelSize={16}
-          length={2.2}
-          startAt={0.0}
-          endAt={0.55}
-          direction="center-out"
-          pattern="wave"
-          intensity={0.45}
-          easing="ease-in-out"
-          accents={["#14B8A6", "#06B6D4", "#F59E0B", "#22C55E"]}
-          label="Civic Infrastructure Transformation Transition"
-        >
-          {({ scrollYProgress }) => (
-            <PixelScrollytellingOverlay scrollYProgress={scrollYProgress} />
-          )}
-        </PixelScroll>
       </section>
 
       {/* 4. BEFORE & AFTER INTERACTIVE REPAIR SLIDER */}
