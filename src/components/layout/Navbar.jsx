@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { TabBar } from "@/components/ui/TabBar";
 import { MagneticButton } from "@/components/ui/MagneticButton";
-import { Menu, X, User, LogOut } from "lucide-react";
+import { Menu, X, User, LogOut, Settings } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { getDashboardPath } from "@/lib/authHelpers";
 
@@ -99,13 +99,24 @@ export function Navbar() {
                 href={getDashboardPath(user.role)}
                 className="flex items-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-200 px-2.5 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
               >
-                <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900 text-[#0D9488] flex items-center justify-center font-bold text-xs uppercase">
-                  {user.name?.charAt(0) || <User className="w-3.5 h-3.5" />}
+                <div className="w-7 h-7 rounded-full bg-teal-100 dark:bg-teal-900 text-[#0D9488] flex items-center justify-center font-bold text-xs uppercase overflow-hidden">
+                  {user.image ? (
+                    <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                  ) : (
+                    user.name?.charAt(0) || <User className="w-3.5 h-3.5" />
+                  )}
                 </div>
                 <span>{user.name}</span>
                 <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200 dark:bg-teal-950 dark:border-teal-800">
                   {user.role || "citizen"}
                 </span>
+              </Link>
+              <Link
+                href="/profile"
+                className="p-2 rounded-full text-slate-600 hover:text-teal-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors"
+                title="Account Settings & Profile"
+              >
+                <Settings className="w-4 h-4" />
               </Link>
               <MagneticButton
                 variant="ghost"
@@ -185,6 +196,14 @@ export function Navbar() {
                   className="text-xs font-medium text-slate-700 dark:text-slate-300 py-1"
                 >
                   Signed in as <span className="font-bold">{user.email}</span> ({user.role})
+                </Link>
+                <Link
+                  href="/profile"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-teal-600 dark:text-teal-400 py-1 hover:underline"
+                >
+                  <Settings className="w-3.5 h-3.5" />
+                  Account Settings &amp; Profile
                 </Link>
                 <MagneticButton
                   variant="outline"
