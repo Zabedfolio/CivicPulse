@@ -6,6 +6,8 @@ import { motion } from "motion/react";
 import { BlurText } from "@/components/ui/BlurText";
 import { MotionCard } from "@/components/ui/MotionCard";
 import { Button } from "@/components/ui/Button";
+import { MagneticButton } from "@/components/ui/MagneticButton";
+import { PixelScroll } from "@/components/ui/PixelScroll";
 import { cn } from "@/lib/utils";
 
 // Home Components
@@ -243,6 +245,32 @@ export default function HomePage() {
             </div>
           </MotionCard>
         </div>
+      </section>
+
+      {/* SCROLL-DRIVEN PIXEL TRANSITION (Motion Brew PixelScroll) */}
+      <section className="w-full overflow-hidden my-6">
+        <PixelScroll
+          from="#F0FDFA"
+          to="#0B132B"
+          pixelSize={18}
+          length={1.3}
+          direction="center-out"
+          pattern="wave"
+          accents={["#14B8A6", "#06B6D4", "#F59E0B", "#22C55E"]}
+          label="Civic Infrastructure Transformation Transition"
+        >
+          <div className="flex flex-col items-center justify-center h-full text-center px-4">
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white/20 text-white backdrop-blur-md border border-white/20 mb-3 shadow-lg">
+              <span>Scroll-Driven City Audit</span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight drop-shadow-md">
+              Transforming Broken Streets Into Verified Repairs
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-teal-200 max-w-lg mx-auto drop-shadow">
+              Scroll downward to inspect authentic before-and-after municipal repair proofs.
+            </p>
+          </div>
+        </PixelScroll>
       </section>
 
       {/* 4. BEFORE & AFTER INTERACTIVE REPAIR SLIDER */}
