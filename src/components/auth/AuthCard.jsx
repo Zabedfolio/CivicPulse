@@ -7,7 +7,7 @@
 
 import * as React from "react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   AnimatePresence,
   motion,
@@ -18,6 +18,7 @@ import {
 } from "motion/react";
 import { cn } from "@/lib/utils";
 import { signIn, signUp } from "@/lib/auth-client";
+import { getDashboardPath } from "@/lib/authHelpers";
 
 // Animated icon: arrow-right
 const ArrowRightIcon = React.forwardRef(function ArrowRightIcon(
@@ -481,6 +482,8 @@ export function AuthCard({
   className,
 }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams?.get("redirect");
   const still = !!useReducedMotion();
   const id = React.useId();
   const root = React.useRef(null);
@@ -540,29 +543,31 @@ export function AuthCard({
     setStatus("busy");
 
     try {
+      let targetPath = redirectParam || "/dashboard";
+
       if (signup) {
-        const { error } = await signUp.email({
+        const { data, error } = await signUp.email({
           name: name.trim(),
           email: email.trim(),
           password,
           role: "citizen",
-          callbackURL: "/dashboard",
         });
         if (error) throw new Error(error.message || "Failed to create account.");
+        targetPath = redirectParam || getDashboardPath(data?.user?.role || "citizen");
       } else {
-        const { error } = await signIn.email({
+        const { data, error } = await signIn.email({
           email: email.trim(),
           password,
-          callbackURL: "/dashboard",
         });
         if (error) throw new Error(error.message || "Invalid credentials.");
+        targetPath = redirectParam || getDashboardPath(data?.user?.role || "citizen");
       }
 
       setStatus("done");
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push(targetPath);
         router.refresh();
-      }, 1000);
+      }, 900);
     } catch (err) {
       setStatus("idle");
       setErrors({ form: err.message || "Authentication failed." });

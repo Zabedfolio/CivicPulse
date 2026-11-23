@@ -24,7 +24,15 @@ export default function RegisterPage() {
           </Link>
         </div>
 
-        <AuthCard defaultMode="signup" />
+        <React.Suspense
+          fallback={
+            <div className="w-[400px] h-[480px] rounded-[32px] bg-white dark:bg-slate-900 border border-border animate-pulse flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
+            </div>
+          }
+        >
+          <AuthCard defaultMode="signup" />
+        </React.Suspense>
       </div>
     </div>
   );
