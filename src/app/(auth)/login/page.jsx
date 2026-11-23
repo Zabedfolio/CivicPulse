@@ -7,7 +7,7 @@ import { ArrowLeft } from "lucide-react";
 
 export default function LoginPage() {
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center justify-center pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
       {/* Background radial gradient glow */}
       <div className="absolute inset-0 -z-10 flex items-center justify-center">
         <div className="w-[500px] h-[500px] bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-70 pointer-events-none" />

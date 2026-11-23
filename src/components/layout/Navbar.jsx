@@ -38,6 +38,18 @@ export function Navbar() {
 
   const user = session?.user;
 
+  // Don't render floating public navbar on internal role-dashboard routes (which have their own sidebar)
+  const isDashboardRoute =
+    pathname.startsWith("/dashboard") ||
+    pathname.startsWith("/admin-dashboard") ||
+    pathname.startsWith("/department-dashboard") ||
+    pathname.startsWith("/my-tasks") ||
+    pathname.startsWith("/issues");
+
+  if (isDashboardRoute) {
+    return null;
+  }
+
   // Active tab resolver
   let currentTabId = "home";
   if (pathname === "/map" || pathname.startsWith("/map/")) currentTabId = "map";
@@ -51,7 +63,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-3 z-50 w-full px-4 sm:px-6 pointer-events-none transition-all">
+    <header className="fixed top-0 inset-x-0 z-50 w-full pt-3 px-4 sm:px-6 pointer-events-none transition-all">
       <div className="max-w-6xl mx-auto rounded-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-slate-800/80 shadow-[0_8px_30px_rgb(0,0,0,0.07)] px-4 sm:px-6 h-16 flex items-center justify-between pointer-events-auto">
         {/* CivicPulse Logo without subtext */}
         <Link href="/" className="flex items-center gap-2.5 group">

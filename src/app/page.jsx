@@ -230,7 +230,7 @@ export default function HomePage() {
       </div>
 
       {/* 2. HERO SECTION + INSTANT QUICK ACTION WIDGET */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 sm:pt-24 sm:pb-16 text-center">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-12 sm:pt-36 sm:pb-16 text-center">
         {/* Animated Badge Pill */}
         <motion.div
           initial={{ opacity: 0, y: -12 }}
