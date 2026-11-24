@@ -88,10 +88,11 @@ export function IssueMarkerPopup({ issue }) {
       {/* Action link */}
       <Link
         href={`/issues/${issue._id}`}
-        className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl text-xs font-bold bg-[#0D9488] text-white hover:bg-teal-700 transition-colors shadow-xs"
+        style={{ color: "#ffffff" }}
+        className="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl text-xs font-extrabold bg-[#0D9488] !text-white hover:bg-teal-700 transition-colors shadow-sm cursor-pointer"
       >
-        <span>Inspect Incident Ticket</span>
-        <ArrowRight className="size-3" />
+        <span style={{ color: "#ffffff" }} className="!text-white font-bold">Inspect Incident Ticket</span>
+        <ArrowRight className="size-3.5 !text-white shrink-0" style={{ color: "#ffffff" }} />
       </Link>
     </div>
   );
