@@ -88,9 +88,12 @@ export function CityIssueMap({
     const map = L.map(containerRef.current, {
       center: center,
       zoom: zoom,
+      zoomControl: false,
       scrollWheelZoom: true,
     });
     mapRef.current = map;
+
+    L.control.zoom({ position: "bottomright" }).addTo(map);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:

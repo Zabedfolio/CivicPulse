@@ -51,7 +51,7 @@ export function MapLayerFilterBar({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[1000] w-[95%] max-w-4xl"
+      className="absolute bottom-6 left-0 right-0 mx-auto z-[1000] w-[95%] max-w-4xl pointer-events-auto"
     >
       <div className="p-3 sm:p-4 rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 shadow-2xl space-y-2.5">
         {/* Top Control Bar: Status Filter + Active Counter + Recenter Button */}

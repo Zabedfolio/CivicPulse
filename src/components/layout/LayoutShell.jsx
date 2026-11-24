@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
-// Dashboard routes where Navbar and Footer must be suppressed
+// Dashboard and full-screen routes where Navbar and Footer must be suppressed
 const DASHBOARD_ROUTES = [
   "/dashboard",
   "/my-reports",
@@ -13,6 +13,11 @@ const DASHBOARD_ROUTES = [
   "/department-dashboard",
   "/admin-dashboard",
   "/unauthorized",
+];
+
+const FOOTER_SUPPRESSED_ROUTES = [
+  ...DASHBOARD_ROUTES,
+  "/map",
 ];
 
 export function LayoutShell({ children }) {
@@ -30,11 +35,18 @@ export function LayoutShell({ children }) {
       )
   );
 
+  const isFooterSuppressed = Boolean(
+    pathname &&
+      FOOTER_SUPPRESSED_ROUTES.some(
+        (route) => pathname === route || pathname?.startsWith(`${route}/`)
+      )
+  );
+
   return (
     <>
       {mounted && !isDashboard && <Navbar />}
       <main className="flex-1 flex flex-col">{children}</main>
-      {mounted && !isDashboard && <Footer />}
+      {mounted && !isFooterSuppressed && <Footer />}
     </>
   );
 }

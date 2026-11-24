@@ -73,9 +73,9 @@ export default function PublicCityMapPage() {
   }, [selectedCategory, selectedStatus]);
 
   return (
-    <div className="relative w-full h-[calc(100vh-4rem)] sm:h-screen pt-16 sm:pt-0 overflow-hidden bg-slate-900">
-      {/* Top Header Floating Overlay */}
-      <div className="absolute top-20 sm:top-6 left-4 sm:left-6 z-[1000] flex flex-col sm:flex-row sm:items-center gap-2 pointer-events-auto">
+    <div className="relative w-full h-screen overflow-hidden bg-slate-900">
+      {/* Top Header Floating Overlay: Positioned neatly below floating Navbar */}
+      <div className="absolute top-24 left-4 sm:left-6 z-[1000] flex flex-col sm:flex-row sm:items-center gap-2 pointer-events-auto">
         <div className="px-4 py-2.5 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 shadow-xl flex items-center gap-3">
           <div className="size-8 rounded-xl bg-teal-50 dark:bg-teal-950 text-[#0D9488] flex items-center justify-center font-bold">
             <MapPin className="size-4" />
