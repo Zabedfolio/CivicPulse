@@ -14,6 +14,7 @@ import {
   Trash2,
   Building2,
   ShieldCheck,
+  Star,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { cn } from "@/lib/utils";
@@ -81,7 +82,20 @@ export function IssueCard({ issue }) {
             {priorityInfo.label} Priority
           </span>
         </div>
-        <StatusBadge status={issue.status} size="sm" />
+        <div className="flex items-center gap-1.5">
+          {issue.feedback ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+              <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+              {issue.feedback.rating || 5}.0
+            </span>
+          ) : (issue.status === "Resolved" || issue.status === "Closed") ? (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-teal-50 dark:bg-teal-950/80 text-teal-700 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+              <Star className="w-3 h-3 text-teal-600" />
+              Rate Fix
+            </span>
+          ) : null}
+          <StatusBadge status={issue.status} size="sm" />
+        </div>
       </div>
 
       {/* Main Content Area */}

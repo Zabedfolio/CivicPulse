@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 import {
   ArrowLeft,
   MapPin,
@@ -21,10 +22,13 @@ import {
   Share2,
   CheckCircle2,
   FileCheck,
+  Star,
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatusTimeline } from "@/components/issues/StatusTimeline";
 import { MagneticButton } from "@/components/ui/MagneticButton";
+import { FeedbackCard } from "@/components/feedback/FeedbackCard";
+import { FeedbackPromptModal } from "@/components/feedback/FeedbackPromptModal";
 import { cn } from "@/lib/utils";
 
 const CATEGORY_ICONS = {
@@ -47,9 +51,13 @@ export default function IssueDetailPage() {
   const params = useParams();
   const router = useRouter();
   const issueId = params?.id;
+  const { data: session } = useSession();
+  const user = session?.user;
 
   const [issue, setIssue] = useState(null);
   const [history, setHistory] = useState([]);
+  const [feedback, setFeedback] = useState(null);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
 
@@ -72,8 +80,27 @@ export default function IssueDetailPage() {
 
         const json = await res.json();
         if (isMounted) {
-          setIssue(json.data?.issue || null);
+          const loadedIssue = json.data?.issue || null;
+          setIssue(loadedIssue);
           setHistory(json.data?.history || []);
+          if (loadedIssue?.feedback) {
+            setFeedback(loadedIssue.feedback);
+          } else if (loadedIssue?._id) {
+            try {
+              const fbRes = await fetch(
+                `http://localhost:5000/api/v1/issues/${loadedIssue._id}/feedback`,
+                { credentials: "include" }
+              );
+              if (fbRes.ok) {
+                const fbJson = await fbRes.json();
+                if (isMounted && fbJson.data?.feedback) {
+                  setFeedback(fbJson.data.feedback);
+                }
+              }
+            } catch {
+              // ignore
+            }
+          }
         }
       } catch (err) {
         if (isMounted) {
@@ -301,11 +328,54 @@ export default function IssueDetailPage() {
             </div>
           </div>
 
-          {/* Right Column: Status Lifecycle Timeline (5 Cols) */}
+          {/* Right Column: Status Lifecycle Timeline & Feedback (5 Cols) */}
           <div className="lg:col-span-5 space-y-6">
+            {/* Citizen Resolution Review Section */}
+            {feedback ? (
+              <FeedbackCard feedback={feedback} />
+            ) : (issue.status === "Resolved" || issue.status === "Closed") && (
+              <div className="p-6 rounded-3xl bg-gradient-to-br from-teal-50 via-white to-emerald-50/60 dark:from-slate-900 dark:via-slate-900/90 dark:to-teal-950/20 border border-teal-200/80 dark:border-teal-900/60 shadow-sm space-y-3">
+                <div className="flex items-center gap-2 text-teal-700 dark:text-teal-300">
+                  <Sparkles className="size-4 text-teal-600" />
+                  <span className="text-xs font-extrabold uppercase tracking-wider">Citizen Satisfaction</span>
+                </div>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">
+                  How was the repair quality?
+                </h3>
+                <p className="text-xs text-muted leading-relaxed">
+                  This issue was officially resolved. Your feedback helps municipal supervisors evaluate crew performance and ensure accountability.
+                </p>
+                {user && (user._id === issue.reporter?._id || user.id === issue.reporter?._id) ? (
+                  <MagneticButton
+                    variant="primary"
+                    size="sm"
+                    onClick={() => setIsFeedbackModalOpen(true)}
+                    className="w-full text-xs font-bold justify-center shadow-sm cursor-pointer"
+                  >
+                    <Star className="w-3.5 h-3.5 mr-1.5 fill-current" />
+                    Rate Resolution Quality
+                  </MagneticButton>
+                ) : (
+                  <div className="text-[11px] font-medium text-muted bg-slate-100 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-200/60 dark:border-slate-700/60 text-center">
+                    Awaiting feedback from the reporting citizen ({issue.reporter?.name || "Reporter"}).
+                  </div>
+                )}
+              </div>
+            )}
+
             <StatusTimeline currentStatus={issue.status} history={history} />
           </div>
         </div>
+
+        {/* Post-Resolution Feedback Modal */}
+        <FeedbackPromptModal
+          isOpen={isFeedbackModalOpen}
+          issue={issue}
+          onClose={() => setIsFeedbackModalOpen(false)}
+          onFeedbackSubmitted={(newFb) => {
+            setFeedback(newFb);
+          }}
+        />
       </div>
     </div>
   );
