@@ -10,6 +10,8 @@ import { PaginationControl } from "@/components/ui/PaginationControl";
 import { VerifyIssueModal } from "@/components/management/VerifyIssueModal";
 import { DepartmentCardGrid } from "@/components/departments/DepartmentCardGrid";
 import { DepartmentModal } from "@/components/departments/DepartmentModal";
+import { StaffDataTable } from "@/components/staff/StaffDataTable";
+import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   ShieldCheck,
@@ -24,13 +26,15 @@ import {
   Plus,
   Layers,
   Search,
+  UserPlus,
+  Briefcase,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // Active sub-dashboard tab: "triage" | "departments"
+  // Active sub-dashboard tab: "triage" | "departments" | "staff"
   const [activeTab, setActiveTab] = useState("triage");
 
   // Filter & Search states (for Triage)
@@ -62,6 +66,14 @@ export default function AdminDashboardPage() {
   const [isDeptLoading, setIsDeptLoading] = useState(true);
   const [deptSearch, setDeptSearch] = useState("");
 
+  // Staff Management States
+  const [staffList, setStaffList] = useState([]);
+  const [isStaffLoading, setIsStaffLoading] = useState(true);
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+  const [selectedStaffForEdit, setSelectedStaffForEdit] = useState(null);
+  const [staffSearch, setStaffSearch] = useState("");
+  const [staffDeptFilter, setStaffDeptFilter] = useState("all");
+
   // Fetch departments for dropdown & all departments for management
   const fetchAllDepartments = useCallback(async () => {
     setIsDeptLoading(true);
@@ -75,7 +87,6 @@ export default function AdminDashboardPage() {
         setAllDepartments(depts);
         setDepartments(depts.filter((d) => d.status !== "inactive"));
       } else {
-        // Fallback to public departments route if non-admin or error
         const pubRes = await fetch("http://localhost:5000/api/v1/departments", {
           credentials: "include",
         });
@@ -105,10 +116,29 @@ export default function AdminDashboardPage() {
     }
   }, []);
 
+  // Fetch staff workforce
+  const fetchStaffMembers = useCallback(async () => {
+    setIsStaffLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/users/staff?limit=100", {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setStaffList(json.data?.staff || []);
+      }
+    } catch (err) {
+      console.warn("Failed to load staff workforce:", err);
+    } finally {
+      setIsStaffLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     fetchAllDepartments();
     fetchManagerCandidates();
-  }, [fetchAllDepartments, fetchManagerCandidates]);
+    fetchStaffMembers();
+  }, [fetchAllDepartments, fetchManagerCandidates, fetchStaffMembers]);
 
   // Fetch city-wide issues
   const fetchAllIssues = useCallback(async () => {
@@ -207,6 +237,23 @@ export default function AdminDashboardPage() {
     );
   });
 
+  // Filter staff by search and department
+  const filteredStaff = staffList.filter((s) => {
+    if (staffDeptFilter !== "all") {
+      const sDeptId = s.department?._id || s.department;
+      if (sDeptId !== staffDeptFilter) return false;
+    }
+    if (!staffSearch.trim()) return true;
+    const q = staffSearch.toLowerCase();
+    return (
+      s.name?.toLowerCase().includes(q) ||
+      s.email?.toLowerCase().includes(q) ||
+      s.phone?.toLowerCase().includes(q) ||
+      s.department?.name?.toLowerCase().includes(q) ||
+      s.department?.code?.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <RoleGate allowedRoles={["admin"]}>
       <div className="max-w-6xl mx-auto space-y-6 pb-12">
@@ -221,7 +268,7 @@ export default function AdminDashboardPage() {
               City Infrastructure Governance Portal
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-300">
-              Admin: <span className="font-semibold text-white">{user?.name}</span> ({user?.email}) · City-Wide Real-Time Audit &amp; Department Management
+              Admin: <span className="font-semibold text-white">{user?.name}</span> ({user?.email}) · City-Wide Real-Time Audit, Departments &amp; Workforce
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
@@ -232,12 +279,12 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Global Navigation Tabs (Triage vs Departments) */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit border border-slate-200/80 dark:border-slate-700/80">
+        {/* Global Navigation Tabs (Triage vs Departments vs Staff) */}
+        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto">
           <button
             type="button"
             onClick={() => setActiveTab("triage")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "triage"
                 ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
                 : "text-muted hover:text-slate-900 dark:hover:text-white"
@@ -253,7 +300,7 @@ export default function AdminDashboardPage() {
           <button
             type="button"
             onClick={() => setActiveTab("departments")}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
               activeTab === "departments"
                 ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
                 : "text-muted hover:text-slate-900 dark:hover:text-white"
@@ -263,6 +310,22 @@ export default function AdminDashboardPage() {
             <span>Municipal Departments</span>
             <span className="px-2 py-0.5 rounded-full text-[10px] bg-teal-50 dark:bg-teal-950 text-[#0D9488] font-mono">
               {allDepartments.length}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("staff")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "staff"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Users className="size-3.5 text-blue-600" />
+            <span>Staff &amp; Workforce</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-blue-50 dark:bg-blue-950 text-blue-600 font-mono">
+              {staffList.length}
             </span>
           </button>
         </div>
@@ -414,6 +477,76 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
+        {/* TAB 3: STAFF & WORKFORCE */}
+        {activeTab === "staff" && (
+          <div className="space-y-6">
+            {/* Top Toolbar: Search, Dept Filter & Onboard CTA */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  Municipal Personnel &amp; Field Workforce
+                </h2>
+                <p className="text-xs text-muted">
+                  Supervise field technician capacity, reassign departmental engineering teams, and onboard specialists.
+                </p>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Department filter */}
+                <select
+                  value={staffDeptFilter}
+                  onChange={(e) => setStaffDeptFilter(e.target.value)}
+                  className="px-3 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:border-teal-500"
+                >
+                  <option value="all">All Departments</option>
+                  {allDepartments.map((d) => (
+                    <option key={d._id} value={d._id}>
+                      {d.code} - {d.name}
+                    </option>
+                  ))}
+                </select>
+
+                {/* Search input */}
+                <div className="relative w-full sm:w-56">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
+                    <Search className="size-3.5" />
+                  </div>
+                  <input
+                    type="text"
+                    value={staffSearch}
+                    onChange={(e) => setStaffSearch(e.target.value)}
+                    placeholder="Search technician..."
+                    className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-teal-500 transition-colors"
+                  />
+                </div>
+
+                <MagneticButton
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedStaffForEdit(null);
+                    setIsStaffModalOpen(true);
+                  }}
+                  className="text-xs font-bold shadow-md shadow-teal-500/10 shrink-0 cursor-pointer"
+                >
+                  <UserPlus className="size-3.5 mr-1.5" />
+                  Onboard Technician
+                </MagneticButton>
+              </div>
+            </div>
+
+            {/* Staff Data Table */}
+            <StaffDataTable
+              staff={filteredStaff}
+              isLoading={isStaffLoading}
+              onEdit={(member) => {
+                setSelectedStaffForEdit(member);
+                setIsStaffModalOpen(true);
+              }}
+            />
+          </div>
+        )}
+
         {/* Triage Decision Modal */}
         <VerifyIssueModal
           isOpen={isTriageModalOpen}
@@ -440,6 +573,21 @@ export default function AdminDashboardPage() {
           onSuccess={() => {
             fetchAllDepartments();
             fetchManagerCandidates();
+          }}
+        />
+
+        {/* Staff Onboard/Edit Modal */}
+        <StaffMemberModal
+          isOpen={isStaffModalOpen}
+          staffMember={selectedStaffForEdit}
+          departments={allDepartments}
+          currentUserRole="admin"
+          onClose={() => {
+            setIsStaffModalOpen(false);
+            setSelectedStaffForEdit(null);
+          }}
+          onSuccess={() => {
+            fetchStaffMembers();
           }}
         />
       </div>
