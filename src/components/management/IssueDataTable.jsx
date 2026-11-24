@@ -146,13 +146,25 @@ export function IssueDataTable({
                       <span className="font-mono text-[11px] font-extrabold text-[#0D9488]">
                         #{ticketId}
                       </span>
-                      <Link
-                        href={`/issues/${issue._id}`}
-                        className="font-bold text-slate-900 dark:text-white hover:text-[#0D9488] transition-colors truncate max-w-sm text-sm"
-                        title={issue.title}
-                      >
-                        {issue.title}
-                      </Link>
+                      <div className="flex items-center gap-2 max-w-sm">
+                        <Link
+                          href={`/issues/${issue._id}`}
+                          className="font-bold text-slate-900 dark:text-white hover:text-[#0D9488] transition-colors truncate text-sm"
+                          title={issue.title}
+                        >
+                          {issue.title}
+                        </Link>
+                        {issue.isDuplicate && (
+                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300 dark:border-amber-800">
+                            Duplicate
+                          </span>
+                        )}
+                        {issue.duplicateCount > 0 && (
+                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold bg-teal-50 text-teal-700 dark:bg-teal-950/80 dark:text-teal-300 border border-teal-200 dark:border-teal-800">
+                            +{issue.duplicateCount} merged
+                          </span>
+                        )}
+                      </div>
                       <span className="flex items-center gap-1 text-[11px] text-muted truncate max-w-xs">
                         <MapPin className="size-3 shrink-0 text-slate-400" />
                         <span className="truncate">{issue.address || "Chattogram, Bangladesh"}</span>

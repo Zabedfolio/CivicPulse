@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { PrioritySelector } from "./PrioritySelector";
 import { DepartmentDropdown } from "./DepartmentDropdown";
+import { DuplicateAlertBanner } from "./DuplicateAlertBanner";
+import { DuplicateComparisonModal } from "./DuplicateComparisonModal";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
@@ -36,6 +38,8 @@ export function VerifyIssueModal({
   const [triageNote, setTriageNote] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [comparisonCandidates, setComparisonCandidates] = useState([]);
+  const [isComparisonOpen, setIsComparisonOpen] = useState(false);
 
   // Sync state whenever active issue changes
   useEffect(() => {
@@ -215,6 +219,15 @@ export function VerifyIssueModal({
               </div>
             )}
 
+            {/* Proximity Duplicate Warning Banner (MGT-04) */}
+            <DuplicateAlertBanner
+              issue={issue}
+              onOpenComparison={(candidates) => {
+                setComparisonCandidates(candidates);
+                setIsComparisonOpen(true);
+              }}
+            />
+
             {/* Citizen Evidence & Description */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
               {/* Photo preview */}
@@ -341,6 +354,18 @@ export function VerifyIssueModal({
           </div>
         </motion.div>
       </div>
+
+      {/* Proximity Duplicate Comparison Dialog (MGT-04) */}
+      <DuplicateComparisonModal
+        isOpen={isComparisonOpen}
+        currentIssue={issue}
+        candidateDuplicates={comparisonCandidates}
+        onClose={() => setIsComparisonOpen(false)}
+        onDuplicateMarked={(updatedChild) => {
+          onSuccess?.(updatedChild);
+          onClose();
+        }}
+      />
     </AnimatePresence>
   );
 }
