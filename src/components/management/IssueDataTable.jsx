@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
+import { AssignTaskModal } from "@/components/tasks/AssignTaskModal";
 import {
   ArrowRight,
   MapPin,
@@ -13,6 +14,7 @@ import {
   ExternalLink,
   ChevronDown,
   ChevronUp,
+  Wrench,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,8 +33,11 @@ export function IssueDataTable({
   issues = [],
   isLoading = false,
   onInspect,
+  onStatusChange,
   className = "",
 }) {
+  const [assigningIssue, setAssigningIssue] = useState(null);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -232,6 +237,19 @@ export function IssueDataTable({
                   {/* Action */}
                   <td className="px-5 py-4 whitespace-nowrap text-right">
                     <div className="flex items-center justify-end gap-2">
+                      {/* Quick Assign Task Button */}
+                      {!issue.isDuplicate && issue.status !== "Closed" && (
+                        <button
+                          type="button"
+                          onClick={() => setAssigningIssue(issue)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                          title="Dispatch field task"
+                        >
+                          <Wrench className="size-3 text-teal-600 dark:text-teal-400" />
+                          <span className="hidden sm:inline">Assign</span>
+                        </button>
+                      )}
+
                       {onInspect ? (
                         <button
                           type="button"
@@ -258,6 +276,17 @@ export function IssueDataTable({
           </motion.tbody>
         </table>
       </div>
+
+      {/* Quick Task Assignment Dialog (TASK-01) */}
+      <AssignTaskModal
+        isOpen={Boolean(assigningIssue)}
+        issue={assigningIssue}
+        onClose={() => setAssigningIssue(null)}
+        onTaskCreated={(newTask) => {
+          onStatusChange?.(assigningIssue._id, "Assigned");
+          setAssigningIssue(null);
+        }}
+      />
     </div>
   );
 }

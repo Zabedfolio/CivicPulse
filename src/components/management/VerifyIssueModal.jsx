@@ -6,6 +6,7 @@ import { PrioritySelector } from "./PrioritySelector";
 import { DepartmentDropdown } from "./DepartmentDropdown";
 import { DuplicateAlertBanner } from "./DuplicateAlertBanner";
 import { DuplicateComparisonModal } from "./DuplicateComparisonModal";
+import { AssignTaskModal } from "@/components/tasks/AssignTaskModal";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
@@ -19,6 +20,7 @@ import {
   Loader2,
   ArrowRight,
   ImageIcon,
+  Wrench,
 } from "lucide-react";
 
 /**
@@ -40,6 +42,7 @@ export function VerifyIssueModal({
   const [serverError, setServerError] = useState("");
   const [comparisonCandidates, setComparisonCandidates] = useState([]);
   const [isComparisonOpen, setIsComparisonOpen] = useState(false);
+  const [isAssignTaskOpen, setIsAssignTaskOpen] = useState(false);
 
   // Sync state whenever active issue changes
   useEffect(() => {
@@ -321,7 +324,7 @@ export function VerifyIssueModal({
               </div>
 
               {/* Actions */}
-              <div className="pt-3 flex items-center justify-between border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={onClose}
@@ -330,25 +333,36 @@ export function VerifyIssueModal({
                   Cancel
                 </button>
 
-                <MagneticButton
-                  variant="primary"
-                  size="md"
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="font-bold min-w-[160px] shadow-md shadow-teal-500/20"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="size-3.5 mr-2 animate-spin" />
-                      Saving Triage...
-                    </>
-                  ) : (
-                    <>
-                      <span>Confirm Triage &amp; Save</span>
-                      <ArrowRight className="size-3.5 ml-1.5" />
-                    </>
-                  )}
-                </MagneticButton>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setIsAssignTaskOpen(true)}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-teal-700 dark:text-teal-300 bg-teal-50 dark:bg-teal-950/60 hover:bg-teal-100 dark:hover:bg-teal-900/60 border border-teal-200 dark:border-teal-800 transition-colors cursor-pointer shadow-xs"
+                  >
+                    <Wrench className="size-3.5" />
+                    <span>Dispatch Crew</span>
+                  </button>
+
+                  <MagneticButton
+                    variant="primary"
+                    size="md"
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="font-bold min-w-[160px] shadow-md shadow-teal-500/20"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="size-3.5 mr-2 animate-spin" />
+                        Saving Triage...
+                      </>
+                    ) : (
+                      <>
+                        <span>Confirm Triage &amp; Save</span>
+                        <ArrowRight className="size-3.5 ml-1.5" />
+                      </>
+                    )}
+                  </MagneticButton>
+                </div>
               </div>
             </form>
           </div>
@@ -363,6 +377,17 @@ export function VerifyIssueModal({
         onClose={() => setIsComparisonOpen(false)}
         onDuplicateMarked={(updatedChild) => {
           onSuccess?.(updatedChild);
+          onClose();
+        }}
+      />
+
+      {/* Field Crew Task Dispatch Dialog (TASK-01) */}
+      <AssignTaskModal
+        isOpen={isAssignTaskOpen}
+        issue={issue}
+        onClose={() => setIsAssignTaskOpen(false)}
+        onTaskCreated={(newTask) => {
+          onSuccess?.({ ...issue, status: "Assigned", assignedTo: newTask.assignedTo });
           onClose();
         }}
       />
