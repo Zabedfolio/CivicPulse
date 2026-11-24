@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { TabBar } from "@/components/ui/TabBar";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { ProfileMenu } from "@/components/ui/ProfileMenu";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { Menu, X, User } from "lucide-react";
 import { useSession, signOut } from "@/lib/auth-client";
 import { getDashboardPath } from "@/lib/authHelpers";
@@ -112,7 +113,9 @@ export function Navbar() {
         {/* Action Buttons: Motion Brew MagneticButton & ProfileMenu */}
         <div className="hidden md:flex items-center gap-2.5">
           {user ? (
-            <div className="relative" ref={profileMenuRef}>
+            <div className="flex items-center gap-2">
+              <NotificationBell />
+              <div className="relative" ref={profileMenuRef}>
               <button
                 type="button"
                 onClick={() => setProfileMenuOpen((prev) => !prev)}
@@ -186,6 +189,7 @@ export function Navbar() {
                 )}
               </AnimatePresence>
             </div>
+            </div>
           ) : (
             <>
               <MagneticButton
@@ -208,8 +212,9 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <div className="flex md:hidden">
+        {/* Mobile Menu Toggle & Bell */}
+        <div className="flex md:hidden items-center gap-1.5">
+          {user && <NotificationBell />}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

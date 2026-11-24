@@ -7,6 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 import { SidebarNav } from "@/components/ui/SidebarNav";
 import { ReportIssueModal } from "@/components/issues/ReportIssueModal";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { LogOut } from "lucide-react";
 
 export default function DashboardLayout({ children }) {
@@ -137,8 +138,27 @@ export default function DashboardLayout({ children }) {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-4 sm:p-6 lg:p-8 overflow-y-auto">
-        {children}
+      <main className="flex-1 min-w-0 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-4 sm:p-6 lg:p-8 overflow-y-auto flex flex-col">
+        {/* Dashboard Top Header: Context Path & Notification Bell */}
+        <div className="flex items-center justify-between pb-4 sm:pb-5 border-b border-slate-100 dark:border-slate-800/80 mb-6 shrink-0">
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
+              CivicPulse Hub
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">/</span>
+            <span className="text-xs font-extrabold text-[#0D9488] capitalize">
+              {activeId.replace("-", " ")}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+          </div>
+        </div>
+
+        <div className="flex-1">
+          {children}
+        </div>
       </main>
 
       {/* Animated Report Issue Modal */}
