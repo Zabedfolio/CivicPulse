@@ -2247,7 +2247,7 @@ export const ProfileMenu = React.forwardRef(
 
     const divider = (key) => (
       <motion.div
-        key={k}
+        key={key}
         variants={ROW}
         aria-hidden
         className="-mx-2 my-1.5 h-px bg-[#242423]/[0.07] dark:bg-white/10"
