@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
-import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
+import React, { useMemo, useEffect, useRef } from "react";
+import { createRoot } from "react-dom/client";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { IssueMarkerPopup } from "./IssueMarkerPopup";
@@ -45,26 +45,10 @@ function createCategoryPulseMarker(category) {
 }
 
 /**
- * Controller to handle smooth pan and recentering
- */
-function MapCenterController({ recenterTrigger, centerCoords }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (recenterTrigger > 0) {
-      map.flyTo(centerCoords, 14, {
-        duration: 1.2,
-        easeLinearity: 0.25,
-      });
-    }
-  }, [recenterTrigger, centerCoords, map]);
-
-  return null;
-}
-
-/**
  * CityIssueMap
- * Full-screen Leaflet GIS map with category-coded pulsing markers and rich inspection popups
+ * Full-screen Leaflet GIS map with category-coded pulsing markers and rich inspection popups.
+ * Built with direct Leaflet lifecycle to guarantee zero "Map container is already initialized"
+ * errors across React 18 Strict Mode and Turbopack Fast Refresh.
  */
 export function CityIssueMap({
   issues = [],
@@ -72,12 +56,10 @@ export function CityIssueMap({
   zoom = 13,
   recenterTrigger = 0,
 }) {
-  const [isMounted, setIsMounted] = useState(false);
-
-  // Guard against React 18 Strict Mode double-initialization
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markersLayerRef = useRef(null);
+  const popupRootsRef = useRef([]);
 
   // Pre-generate category icons cache
   const iconCache = useMemo(() => {
@@ -89,68 +71,121 @@ export function CityIssueMap({
     return cache;
   }, []);
 
-  if (!isMounted) {
-    return (
-      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-900 text-muted">
-        <div className="size-8 rounded-full border-2 border-[#0D9488] border-t-transparent animate-spin mb-3" />
-        <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          Initializing Chattogram GIS Map...
-        </span>
-      </div>
-    );
-  }
+  // Initialize Map
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Safety: ensure any previous map instance on this node is removed
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
+    }
+
+    if (containerRef.current._leaflet_id) {
+      delete containerRef.current._leaflet_id;
+    }
+
+    const map = L.map(containerRef.current, {
+      center: center,
+      zoom: zoom,
+      scrollWheelZoom: true,
+    });
+    mapRef.current = map;
+
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
+      {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        maxZoom: 19,
+      }
+    ).addTo(map);
+
+    const markersLayer = L.layerGroup().addTo(map);
+    markersLayerRef.current = markersLayer;
+
+    return () => {
+      // Clean up popup React roots
+      popupRootsRef.current.forEach((root) => {
+        try {
+          root.unmount();
+        } catch (e) {
+          // ignore unmount errors on teardown
+        }
+      });
+      popupRootsRef.current = [];
+
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
+      }
+    };
+  }, []);
+
+  // Smooth pan and recenter when trigger increments
+  useEffect(() => {
+    if (mapRef.current && recenterTrigger > 0) {
+      mapRef.current.flyTo(center, 14, {
+        duration: 1.2,
+        easeLinearity: 0.25,
+      });
+    }
+  }, [recenterTrigger, center]);
+
+  // Update incident pins when issues array changes
+  useEffect(() => {
+    if (!markersLayerRef.current) return;
+
+    // Clean up previous popup roots
+    popupRootsRef.current.forEach((root) => {
+      try {
+        root.unmount();
+      } catch (e) {
+        // ignore
+      }
+    });
+    popupRootsRef.current = [];
+
+    // Clear previous markers
+    markersLayerRef.current.clearLayers();
+
+    issues.forEach((issue) => {
+      const coords = issue.location?.coordinates;
+      if (!Array.isArray(coords) || coords.length < 2) return;
+
+      const lng = coords[0];
+      const lat = coords[1];
+
+      if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+        return;
+      }
+
+      const icon = iconCache[issue.category] || iconCache["default"];
+      const marker = L.marker([lat, lng], { icon });
+
+      // Create container element and mount interactive IssueMarkerPopup
+      const popupContainer = document.createElement("div");
+      const root = createRoot(popupContainer);
+      root.render(<IssueMarkerPopup issue={issue} />);
+      popupRootsRef.current.push(root);
+
+      marker.bindPopup(popupContainer, {
+        className: "civic-pulse-popup",
+        offset: [0, -28],
+        closeButton: false,
+      });
+
+      markersLayerRef.current.addLayer(marker);
+    });
+  }, [issues, iconCache]);
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
-      <MapContainer
-        center={center}
-        zoom={zoom}
-        scrollWheelZoom={true}
+      <div
+        ref={containerRef}
         className="w-full h-full z-0"
         style={{ minHeight: "100%", width: "100%" }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
-        />
-
-        <MapCenterController
-          recenterTrigger={recenterTrigger}
-          centerCoords={center}
-        />
-
-        {/* Issue Markers */}
-        {issues.map((issue) => {
-          const coords = issue.location?.coordinates;
-          if (!Array.isArray(coords) || coords.length < 2) return null;
-
-          const lng = coords[0];
-          const lat = coords[1];
-
-          if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-            return null;
-          }
-
-          const icon = iconCache[issue.category] || iconCache["default"];
-
-          return (
-            <Marker
-              key={issue._id}
-              position={[lat, lng]}
-              icon={icon}
-            >
-              <Popup
-                className="civic-pulse-popup"
-                offset={[0, -28]}
-                closeButton={false}
-              >
-                <IssueMarkerPopup issue={issue} />
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
+      />
     </div>
   );
 }
