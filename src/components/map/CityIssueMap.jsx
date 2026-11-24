@@ -92,14 +92,11 @@ export function CityIssueMap({
     });
     mapRef.current = map;
 
-    L.tileLayer(
-      "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png",
-      {
-        attribution:
-          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-        maxZoom: 19,
-      }
-    ).addTo(map);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
 
     const markersLayer = L.layerGroup().addTo(map);
     markersLayerRef.current = markersLayer;
