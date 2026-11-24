@@ -7,6 +7,7 @@ import { IssueDataTable } from "@/components/management/IssueDataTable";
 import { IssueFilterBar } from "@/components/management/IssueFilterBar";
 import { DebouncedSearchInput } from "@/components/management/DebouncedSearchInput";
 import { PaginationControl } from "@/components/ui/PaginationControl";
+import { VerifyIssueModal } from "@/components/management/VerifyIssueModal";
 import {
   Building2,
   Clock,
@@ -36,8 +37,23 @@ export default function DepartmentDashboardPage() {
 
   // Issues data & loading
   const [issues, setIssues] = useState([]);
+  const [departments, setDepartments] = useState([]);
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [isTriageModalOpen, setIsTriageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [fetchError, setFetchError] = useState("");
+
+  // Fetch departments for potential re-routing
+  useEffect(() => {
+    fetch("http://localhost:5000/api/v1/departments", { credentials: "include" })
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data?.departments) {
+          setDepartments(json.data.departments);
+        }
+      })
+      .catch((err) => console.warn("Departments fetch notice:", err));
+  }, []);
 
   const fetchDepartmentIssues = useCallback(async () => {
     setIsLoading(true);
@@ -211,7 +227,14 @@ export default function DepartmentDashboardPage() {
 
         {/* Responsive Motion Brew IssueDataTable */}
         <div className="space-y-3">
-          <IssueDataTable issues={issues} isLoading={isLoading} />
+          <IssueDataTable
+            issues={issues}
+            isLoading={isLoading}
+            onInspect={(iss) => {
+              setSelectedIssue(iss);
+              setIsTriageModalOpen(true);
+            }}
+          />
 
           {/* Spring Pagination Controls */}
           <PaginationControl
@@ -226,6 +249,20 @@ export default function DepartmentDashboardPage() {
             }}
           />
         </div>
+
+        {/* Triage Decision Modal */}
+        <VerifyIssueModal
+          isOpen={isTriageModalOpen}
+          issue={selectedIssue}
+          departments={departments}
+          onClose={() => {
+            setIsTriageModalOpen(false);
+            setSelectedIssue(null);
+          }}
+          onSuccess={() => {
+            fetchDepartmentIssues();
+          }}
+        />
       </div>
     </RoleGate>
   );

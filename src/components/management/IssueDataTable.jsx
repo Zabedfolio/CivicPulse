@@ -220,13 +220,24 @@ export function IssueDataTable({
                   {/* Action */}
                   <td className="px-5 py-4 whitespace-nowrap text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link
-                        href={`/issues/${issue._id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-[#0D9488] bg-teal-50 dark:bg-teal-950/80 hover:bg-teal-100 dark:hover:bg-teal-900 border border-teal-200/80 dark:border-teal-800/80 transition-colors"
-                      >
-                        <span>Triage</span>
-                        <ArrowRight className="size-3" />
-                      </Link>
+                      {onInspect ? (
+                        <button
+                          type="button"
+                          onClick={() => onInspect(issue)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-[#0D9488] bg-teal-50 dark:bg-teal-950/80 hover:bg-teal-100 dark:hover:bg-teal-900 border border-teal-200/80 dark:border-teal-800/80 transition-colors cursor-pointer"
+                        >
+                          <span>Triage</span>
+                          <ArrowRight className="size-3" />
+                        </button>
+                      ) : (
+                        <Link
+                          href={`/issues/${issue._id}`}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-bold text-[#0D9488] bg-teal-50 dark:bg-teal-950/80 hover:bg-teal-100 dark:hover:bg-teal-900 border border-teal-200/80 dark:border-teal-800/80 transition-colors"
+                        >
+                          <span>Triage</span>
+                          <ArrowRight className="size-3" />
+                        </Link>
+                      )}
                     </div>
                   </td>
                 </motion.tr>

@@ -7,6 +7,7 @@ import { IssueDataTable } from "@/components/management/IssueDataTable";
 import { IssueFilterBar } from "@/components/management/IssueFilterBar";
 import { DebouncedSearchInput } from "@/components/management/DebouncedSearchInput";
 import { PaginationControl } from "@/components/ui/PaginationControl";
+import { VerifyIssueModal } from "@/components/management/VerifyIssueModal";
 import {
   ShieldCheck,
   Building2,
@@ -41,6 +42,8 @@ export default function AdminDashboardPage() {
   // Issues & departments data
   const [issues, setIssues] = useState([]);
   const [departments, setDepartments] = useState([]);
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const [isTriageModalOpen, setIsTriageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   // Fetch departments for dropdown
@@ -228,7 +231,14 @@ export default function AdminDashboardPage() {
 
         {/* Motion Brew IssueDataTable */}
         <div className="space-y-3">
-          <IssueDataTable issues={issues} isLoading={isLoading} />
+          <IssueDataTable
+            issues={issues}
+            isLoading={isLoading}
+            onInspect={(iss) => {
+              setSelectedIssue(iss);
+              setIsTriageModalOpen(true);
+            }}
+          />
 
           {/* Spring Pagination Controls */}
           <PaginationControl
@@ -243,6 +253,20 @@ export default function AdminDashboardPage() {
             }}
           />
         </div>
+
+        {/* Triage Decision Modal */}
+        <VerifyIssueModal
+          isOpen={isTriageModalOpen}
+          issue={selectedIssue}
+          departments={departments}
+          onClose={() => {
+            setIsTriageModalOpen(false);
+            setSelectedIssue(null);
+          }}
+          onSuccess={() => {
+            fetchAllIssues();
+          }}
+        />
       </div>
     </RoleGate>
   );
