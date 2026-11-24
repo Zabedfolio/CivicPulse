@@ -8,6 +8,9 @@ import { IssueFilterBar } from "@/components/management/IssueFilterBar";
 import { DebouncedSearchInput } from "@/components/management/DebouncedSearchInput";
 import { PaginationControl } from "@/components/ui/PaginationControl";
 import { VerifyIssueModal } from "@/components/management/VerifyIssueModal";
+import { DepartmentCardGrid } from "@/components/departments/DepartmentCardGrid";
+import { DepartmentModal } from "@/components/departments/DepartmentModal";
+import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   ShieldCheck,
   Building2,
@@ -18,14 +21,19 @@ import {
   BarChart3,
   ListFilter,
   Sparkles,
+  Plus,
+  Layers,
+  Search,
 } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 
 export default function AdminDashboardPage() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // Filter & Search states
+  // Active sub-dashboard tab: "triage" | "departments"
+  const [activeTab, setActiveTab] = useState("triage");
+
+  // Filter & Search states (for Triage)
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
   const [priority, setPriority] = useState("all");
@@ -33,7 +41,7 @@ export default function AdminDashboardPage() {
   const [department, setDepartment] = useState("all");
   const [sortOption, setSortOption] = useState("createdAt_desc");
 
-  // Pagination states
+  // Pagination states (for Triage)
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [totalItems, setTotalItems] = useState(0);
@@ -46,17 +54,61 @@ export default function AdminDashboardPage() {
   const [isTriageModalOpen, setIsTriageModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Fetch departments for dropdown
-  useEffect(() => {
-    fetch("http://localhost:5000/api/v1/departments", { credentials: "include" })
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.data?.departments) {
-          setDepartments(json.data.departments);
-        }
-      })
-      .catch((err) => console.warn("Failed to load departments:", err));
+  // Department Management States
+  const [allDepartments, setAllDepartments] = useState([]);
+  const [managerCandidates, setManagerCandidates] = useState([]);
+  const [isDeptModalOpen, setIsDeptModalOpen] = useState(false);
+  const [selectedDeptForEdit, setSelectedDeptForEdit] = useState(null);
+  const [isDeptLoading, setIsDeptLoading] = useState(true);
+  const [deptSearch, setDeptSearch] = useState("");
+
+  // Fetch departments for dropdown & all departments for management
+  const fetchAllDepartments = useCallback(async () => {
+    setIsDeptLoading(true);
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/departments/all", {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const depts = json.data?.departments || [];
+        setAllDepartments(depts);
+        setDepartments(depts.filter((d) => d.status !== "inactive"));
+      } else {
+        // Fallback to public departments route if non-admin or error
+        const pubRes = await fetch("http://localhost:5000/api/v1/departments", {
+          credentials: "include",
+        });
+        const pubJson = await pubRes.json();
+        setDepartments(pubJson.data?.departments || []);
+        setAllDepartments(pubJson.data?.departments || []);
+      }
+    } catch (err) {
+      console.warn("Failed to load departments:", err);
+    } finally {
+      setIsDeptLoading(false);
+    }
   }, []);
+
+  // Fetch manager candidates
+  const fetchManagerCandidates = useCallback(async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/v1/departments/managers/candidates", {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setManagerCandidates(json.data?.candidates || []);
+      }
+    } catch (err) {
+      console.warn("Failed to load manager candidates:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAllDepartments();
+    fetchManagerCandidates();
+  }, [fetchAllDepartments, fetchManagerCandidates]);
 
   // Fetch city-wide issues
   const fetchAllIssues = useCallback(async () => {
@@ -143,6 +195,18 @@ export default function AdminDashboardPage() {
     setPage(1);
   };
 
+  // Filter departments by search
+  const filteredDepartments = allDepartments.filter((d) => {
+    if (!deptSearch.trim()) return true;
+    const q = deptSearch.toLowerCase();
+    return (
+      d.name?.toLowerCase().includes(q) ||
+      d.code?.toLowerCase().includes(q) ||
+      d.manager?.name?.toLowerCase().includes(q) ||
+      d.description?.toLowerCase().includes(q)
+    );
+  });
+
   return (
     <RoleGate allowedRoles={["admin"]}>
       <div className="max-w-6xl mx-auto space-y-6 pb-12">
@@ -157,7 +221,7 @@ export default function AdminDashboardPage() {
               City Infrastructure Governance Portal
             </h1>
             <p className="mt-1 text-xs sm:text-sm text-slate-300">
-              Admin: <span className="font-semibold text-white">{user?.name}</span> ({user?.email}) · City-Wide Real-Time Audit &amp; Cross-Department Triage
+              Admin: <span className="font-semibold text-white">{user?.name}</span> ({user?.email}) · City-Wide Real-Time Audit &amp; Department Management
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 self-start sm:self-auto">
@@ -168,91 +232,187 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Global Statistics Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div className="text-[11px] font-bold text-muted uppercase tracking-wider">Total Reports</div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{totalItems}</div>
-            <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Across all 41 wards</p>
-          </div>
-          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div className="text-[11px] font-bold text-[#0D9488] uppercase tracking-wider">Active Divisions</div>
-            <div className="text-2xl font-extrabold text-[#0D9488] mt-1">{departments.length || 6}</div>
-            <p className="text-[10px] text-muted mt-0.5">Engineering departments</p>
-          </div>
-          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Unverified Queue</div>
-            <div className="text-2xl font-extrabold text-amber-600 mt-1">
-              {issues.filter((i) => i.status === "Submitted").length}
-            </div>
-            <p className="text-[10px] text-muted mt-0.5">Pending initial review</p>
-          </div>
-          <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-            <div className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">In Progress</div>
-            <div className="text-2xl font-extrabold text-purple-600 mt-1">
-              {issues.filter((i) => i.status === "In Progress").length}
-            </div>
-            <p className="text-[10px] text-muted mt-0.5">Under field repair</p>
-          </div>
+        {/* Global Navigation Tabs (Triage vs Departments) */}
+        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit border border-slate-200/80 dark:border-slate-700/80">
+          <button
+            type="button"
+            onClick={() => setActiveTab("triage")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "triage"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Activity className="size-3.5 text-teal-600" />
+            <span>Incident Triage &amp; Audit</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-mono">
+              {totalItems}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("departments")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer ${
+              activeTab === "departments"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Building2 className="size-3.5 text-[#0D9488]" />
+            <span>Municipal Departments</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-teal-50 dark:bg-teal-950 text-[#0D9488] font-mono">
+              {allDepartments.length}
+            </span>
+          </button>
         </div>
 
-        {/* Triage Search & Filter Control Panel */}
-        <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
-            <div className="flex items-center gap-2">
-              <ListFilter className="size-4 text-teal-600" />
-              <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-                City-Wide Incident Triage Controls
-              </h2>
+        {/* TAB 1: INCIDENT TRIAGE & AUDIT */}
+        {activeTab === "triage" && (
+          <div className="space-y-6">
+            {/* Global Statistics Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <div className="text-[11px] font-bold text-muted uppercase tracking-wider">Total Reports</div>
+                <div className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1">{totalItems}</div>
+                <p className="text-[10px] text-emerald-600 font-semibold mt-0.5">Across all 41 wards</p>
+              </div>
+              <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <div className="text-[11px] font-bold text-[#0D9488] uppercase tracking-wider">Active Divisions</div>
+                <div className="text-2xl font-extrabold text-[#0D9488] mt-1">{departments.length || 6}</div>
+                <p className="text-[10px] text-muted mt-0.5">Engineering departments</p>
+              </div>
+              <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <div className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Unverified Queue</div>
+                <div className="text-2xl font-extrabold text-amber-600 mt-1">
+                  {issues.filter((i) => i.status === "Submitted").length}
+                </div>
+                <p className="text-[10px] text-muted mt-0.5">Pending initial review</p>
+              </div>
+              <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <div className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">In Progress</div>
+                <div className="text-2xl font-extrabold text-purple-600 mt-1">
+                  {issues.filter((i) => i.status === "In Progress").length}
+                </div>
+                <p className="text-[10px] text-muted mt-0.5">Under field repair</p>
+              </div>
             </div>
-            <DebouncedSearchInput
-              value={search}
-              onChange={handleSearchChange}
-              placeholder="Search reports by title, ticket, or ward..."
+
+            {/* Triage Search & Filter Control Panel */}
+            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 pb-3">
+                <div className="flex items-center gap-2">
+                  <ListFilter className="size-4 text-teal-600" />
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                    City-Wide Incident Triage Controls
+                  </h2>
+                </div>
+                <DebouncedSearchInput
+                  value={search}
+                  onChange={handleSearchChange}
+                  placeholder="Search reports by title, ticket, or ward..."
+                />
+              </div>
+
+              <IssueFilterBar
+                selectedStatus={status}
+                onStatusChange={handleStatusChange}
+                selectedPriority={priority}
+                onPriorityChange={handlePriorityChange}
+                selectedCategory={category}
+                onCategoryChange={handleCategoryChange}
+                selectedDepartment={department}
+                onDepartmentChange={handleDepartmentChange}
+                departments={departments}
+                showDepartmentFilter={true}
+                sortOption={sortOption}
+                onSortChange={handleSortChange}
+                onReset={handleResetFilters}
+              />
+            </div>
+
+            {/* Motion Brew IssueDataTable */}
+            <div className="space-y-3">
+              <IssueDataTable
+                issues={issues}
+                isLoading={isLoading}
+                onInspect={(iss) => {
+                  setSelectedIssue(iss);
+                  setIsTriageModalOpen(true);
+                }}
+              />
+
+              {/* Spring Pagination Controls */}
+              <PaginationControl
+                currentPage={page}
+                totalPages={totalPages}
+                totalItems={totalItems}
+                pageSize={pageSize}
+                onPageChange={(p) => setPage(p)}
+                onPageSizeChange={(sz) => {
+                  setPageSize(sz);
+                  setPage(1);
+                }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: MUNICIPAL DEPARTMENTS */}
+        {activeTab === "departments" && (
+          <div className="space-y-6">
+            {/* Top Toolbar: Search & Add CTA */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  Municipal Department Directory
+                </h2>
+                <p className="text-xs text-muted">
+                  Configure municipal engineering divisions, designate department heads, and monitor active ticket loads.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3">
+                {/* Search box */}
+                <div className="relative w-full sm:w-64">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
+                    <Search className="size-3.5" />
+                  </div>
+                  <input
+                    type="text"
+                    value={deptSearch}
+                    onChange={(e) => setDeptSearch(e.target.value)}
+                    placeholder="Search departments or code..."
+                    className="w-full pl-9 pr-3.5 py-1.5 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-teal-500 transition-colors"
+                  />
+                </div>
+
+                <MagneticButton
+                  variant="primary"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedDeptForEdit(null);
+                    setIsDeptModalOpen(true);
+                  }}
+                  className="text-xs font-bold shadow-md shadow-teal-500/10 shrink-0 cursor-pointer"
+                >
+                  <Plus className="size-3.5 mr-1.5" />
+                  Register Department
+                </MagneticButton>
+              </div>
+            </div>
+
+            {/* Department Cards Grid */}
+            <DepartmentCardGrid
+              departments={filteredDepartments}
+              isLoading={isDeptLoading}
+              onEdit={(dept) => {
+                setSelectedDeptForEdit(dept);
+                setIsDeptModalOpen(true);
+              }}
             />
           </div>
-
-          <IssueFilterBar
-            selectedStatus={status}
-            onStatusChange={handleStatusChange}
-            selectedPriority={priority}
-            onPriorityChange={handlePriorityChange}
-            selectedCategory={category}
-            onCategoryChange={handleCategoryChange}
-            selectedDepartment={department}
-            onDepartmentChange={handleDepartmentChange}
-            departments={departments}
-            showDepartmentFilter={true}
-            sortOption={sortOption}
-            onSortChange={handleSortChange}
-            onReset={handleResetFilters}
-          />
-        </div>
-
-        {/* Motion Brew IssueDataTable */}
-        <div className="space-y-3">
-          <IssueDataTable
-            issues={issues}
-            isLoading={isLoading}
-            onInspect={(iss) => {
-              setSelectedIssue(iss);
-              setIsTriageModalOpen(true);
-            }}
-          />
-
-          {/* Spring Pagination Controls */}
-          <PaginationControl
-            currentPage={page}
-            totalPages={totalPages}
-            totalItems={totalItems}
-            pageSize={pageSize}
-            onPageChange={(p) => setPage(p)}
-            onPageSizeChange={(sz) => {
-              setPageSize(sz);
-              setPage(1);
-            }}
-          />
-        </div>
+        )}
 
         {/* Triage Decision Modal */}
         <VerifyIssueModal
@@ -265,6 +425,21 @@ export default function AdminDashboardPage() {
           }}
           onSuccess={() => {
             fetchAllIssues();
+          }}
+        />
+
+        {/* Department Create/Edit Modal */}
+        <DepartmentModal
+          isOpen={isDeptModalOpen}
+          department={selectedDeptForEdit}
+          candidates={managerCandidates}
+          onClose={() => {
+            setIsDeptModalOpen(false);
+            setSelectedDeptForEdit(null);
+          }}
+          onSuccess={() => {
+            fetchAllDepartments();
+            fetchManagerCandidates();
           }}
         />
       </div>
