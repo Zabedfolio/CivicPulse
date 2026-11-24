@@ -76,11 +76,13 @@ export function Footer() {
 
   // Hide footer inside dense internal role dashboards (which use full-height app sidebars)
   const isDashboardRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/admin-dashboard") ||
-    pathname.startsWith("/department-dashboard") ||
-    pathname.startsWith("/my-tasks") ||
-    pathname.startsWith("/issues");
+    pathname?.startsWith("/dashboard") ||
+    pathname?.startsWith("/my-reports") ||
+    pathname?.startsWith("/admin-dashboard") ||
+    pathname?.startsWith("/department-dashboard") ||
+    pathname?.startsWith("/my-tasks") ||
+    pathname?.startsWith("/unauthorized") ||
+    pathname?.startsWith("/issues");
 
   if (isDashboardRoute) {
     return null;

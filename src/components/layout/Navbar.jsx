@@ -57,12 +57,12 @@ export function Navbar() {
 
   // Double guard: suppress on dashboard routes
   const isDashboardRoute =
-    pathname.startsWith("/dashboard") ||
-    pathname.startsWith("/my-reports") ||
-    pathname.startsWith("/my-tasks") ||
-    pathname.startsWith("/department-dashboard") ||
-    pathname.startsWith("/admin-dashboard") ||
-    pathname.startsWith("/unauthorized");
+    pathname?.startsWith("/dashboard") ||
+    pathname?.startsWith("/my-reports") ||
+    pathname?.startsWith("/my-tasks") ||
+    pathname?.startsWith("/department-dashboard") ||
+    pathname?.startsWith("/admin-dashboard") ||
+    pathname?.startsWith("/unauthorized");
 
   if (isDashboardRoute) {
     return null;

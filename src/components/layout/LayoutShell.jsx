@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -17,16 +17,24 @@ const DASHBOARD_ROUTES = [
 
 export function LayoutShell({ children }) {
   const pathname = usePathname();
+  const [mounted, setMounted] = useState(false);
 
-  const isDashboard = DASHBOARD_ROUTES.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`)
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const isDashboard = Boolean(
+    pathname &&
+      DASHBOARD_ROUTES.some(
+        (route) => pathname === route || pathname?.startsWith(`${route}/`)
+      )
   );
 
   return (
     <>
-      {!isDashboard && <Navbar />}
+      {mounted && !isDashboard && <Navbar />}
       <main className="flex-1 flex flex-col">{children}</main>
-      {!isDashboard && <Footer />}
+      {mounted && !isDashboard && <Footer />}
     </>
   );
 }
