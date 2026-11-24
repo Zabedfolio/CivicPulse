@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef } from "react";
-import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
+import React, { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -33,45 +32,9 @@ function createPulseIcon() {
 }
 
 /**
- * Recenter and pan map smoothly when parent lat/lng props change
- */
-function MapRecenter({ lat, lng }) {
-  const map = useMap();
-  const prevCoordsRef = useRef([lat, lng]);
-
-  useEffect(() => {
-    if (
-      Math.abs(prevCoordsRef.current[0] - lat) > 0.00005 ||
-      Math.abs(prevCoordsRef.current[1] - lng) > 0.00005
-    ) {
-      prevCoordsRef.current = [lat, lng];
-      map.flyTo([lat, lng], Math.max(map.getZoom(), 15), {
-        duration: 0.8,
-        easeLinearity: 0.25,
-      });
-    }
-  }, [lat, lng, map]);
-
-  return null;
-}
-
-/**
- * Handle map clicks to relocate pin
- */
-function MapClickHandler({ onLocationSelect }) {
-  useMapEvents({
-    click(e) {
-      const lat = parseFloat(e.latlng.lat.toFixed(6));
-      const lng = parseFloat(e.latlng.lng.toFixed(6));
-      onLocationSelect(lat, lng);
-    },
-  });
-
-  return null;
-}
-
-/**
  * Client-only Interactive Leaflet Map Picker Component
+ * Uses resilient direct Leaflet lifecycle to eliminate "Map container is already initialized"
+ * across React StrictMode, Fast Refresh, and Modal unmount/remount cycles.
  */
 export default function MapPicker({
   latitude = 22.3384,
@@ -80,75 +43,107 @@ export default function MapPicker({
   zoom = 15,
   className = "h-[400px] w-full rounded-2xl overflow-hidden",
 }) {
-  const [isMounted, setIsMounted] = useState(false);
+  const containerRef = useRef(null);
+  const mapRef = useRef(null);
+  const markerRef = useRef(null);
+  const onSelectRef = useRef(onLocationSelect);
 
+  // Keep latest onLocationSelect callback ref
   useEffect(() => {
-    const el = document.getElementById("civic-map-picker-container");
-    if (el && el._leaflet_id) {
-      el._leaflet_id = null;
+    onSelectRef.current = onLocationSelect;
+  }, [onLocationSelect]);
+
+  // Initialize Map
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    // Safety: ensure any previous map instance on this node is removed
+    if (mapRef.current) {
+      mapRef.current.remove();
+      mapRef.current = null;
     }
-    setIsMounted(true);
+
+    if (containerRef.current._leaflet_id) {
+      delete containerRef.current._leaflet_id;
+    }
+
+    const map = L.map(containerRef.current, {
+      center: [latitude, longitude],
+      zoom: zoom,
+      scrollWheelZoom: true,
+    });
+    mapRef.current = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+    }).addTo(map);
+
+    const icon = createPulseIcon();
+    const marker = L.marker([latitude, longitude], {
+      draggable: true,
+      icon: icon,
+    }).addTo(map);
+    markerRef.current = marker;
+
+    marker.on("dragend", () => {
+      const pos = marker.getLatLng();
+      const lat = parseFloat(pos.lat.toFixed(6));
+      const lng = parseFloat(pos.lng.toFixed(6));
+      if (onSelectRef.current) {
+        onSelectRef.current(lat, lng);
+      }
+    });
+
+    map.on("click", (e) => {
+      const lat = parseFloat(e.latlng.lat.toFixed(6));
+      const lng = parseFloat(e.latlng.lng.toFixed(6));
+      marker.setLatLng([lat, lng]);
+      if (onSelectRef.current) {
+        onSelectRef.current(lat, lng);
+      }
+    });
 
     return () => {
-      const container = document.getElementById("civic-map-picker-container");
-      if (container && container._leaflet_id) {
-        container._leaflet_id = null;
+      if (mapRef.current) {
+        mapRef.current.remove();
+        mapRef.current = null;
       }
     };
   }, []);
 
-  const markerIcon = useMemo(() => createPulseIcon(), []);
-  const markerRef = useRef(null);
-
-  const eventHandlers = useMemo(
-    () => ({
-      dragend() {
-        const marker = markerRef.current;
-        if (marker != null) {
-          const latLng = marker.getLatLng();
-          const lat = parseFloat(latLng.lat.toFixed(6));
-          const lng = parseFloat(latLng.lng.toFixed(6));
-          onLocationSelect(lat, lng);
-        }
-      },
-    }),
-    [onLocationSelect]
-  );
-
-  if (!isMounted) {
-    return (
-      <div className={`relative ${className} flex items-center justify-center bg-slate-100 dark:bg-slate-800`}>
-        <div className="size-6 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />
-      </div>
-    );
-  }
+  // Smooth pan and update marker position when lat/lng props change from geocoding or GPS
+  useEffect(() => {
+    if (markerRef.current) {
+      const currentPos = markerRef.current.getLatLng();
+      if (
+        Math.abs(currentPos.lat - latitude) > 0.00005 ||
+        Math.abs(currentPos.lng - longitude) > 0.00005
+      ) {
+        markerRef.current.setLatLng([latitude, longitude]);
+      }
+    }
+    if (mapRef.current) {
+      const currentCenter = mapRef.current.getCenter();
+      if (
+        Math.abs(currentCenter.lat - latitude) > 0.00005 ||
+        Math.abs(currentCenter.lng - longitude) > 0.00005
+      ) {
+        mapRef.current.flyTo([latitude, longitude], Math.max(mapRef.current.getZoom(), 15), {
+          duration: 0.8,
+          easeLinearity: 0.25,
+        });
+      }
+    }
+  }, [latitude, longitude]);
 
   return (
     <div className={`relative ${className}`}>
-      <MapContainer
-        id="civic-map-picker-container"
-        center={[latitude, longitude]}
-        zoom={zoom}
-        scrollWheelZoom={true}
+      <div
+        ref={containerRef}
         style={{ height: "100%", width: "100%", zIndex: 1 }}
-      >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          maxZoom={19}
-        />
-
-        <MapRecenter lat={latitude} lng={longitude} />
-        <MapClickHandler onLocationSelect={onLocationSelect} />
-
-        <Marker
-          draggable={true}
-          eventHandlers={eventHandlers}
-          position={[latitude, longitude]}
-          ref={markerRef}
-          icon={markerIcon}
-        />
-      </MapContainer>
+      />
 
       {/* Map floating instructions */}
       <div className="absolute top-3 right-3 z-[1000] pointer-events-none">

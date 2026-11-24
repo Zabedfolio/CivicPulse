@@ -74,20 +74,9 @@ export function CityIssueMap({
 }) {
   const [isMounted, setIsMounted] = useState(false);
 
-  // Guard against React 18 Strict Mode and Fast Refresh double-initialization
+  // Guard against React 18 Strict Mode double-initialization
   useEffect(() => {
-    const el = document.getElementById("city-issue-map-container");
-    if (el && el._leaflet_id) {
-      el._leaflet_id = null;
-    }
     setIsMounted(true);
-
-    return () => {
-      const container = document.getElementById("city-issue-map-container");
-      if (container && container._leaflet_id) {
-        container._leaflet_id = null;
-      }
-    };
   }, []);
 
   // Pre-generate category icons cache
@@ -114,7 +103,6 @@ export function CityIssueMap({
   return (
     <div className="relative w-full h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
       <MapContainer
-        id="city-issue-map-container"
         center={center}
         zoom={zoom}
         scrollWheelZoom={true}
