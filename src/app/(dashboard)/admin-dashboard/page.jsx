@@ -12,6 +12,7 @@ import { DepartmentCardGrid } from "@/components/departments/DepartmentCardGrid"
 import { DepartmentModal } from "@/components/departments/DepartmentModal";
 import { StaffDataTable } from "@/components/staff/StaffDataTable";
 import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
+import { DepartmentAnalyticsView } from "@/components/analytics/DepartmentAnalyticsView";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   ShieldCheck,
@@ -28,6 +29,7 @@ import {
   Search,
   UserPlus,
   Briefcase,
+  Award,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -65,6 +67,7 @@ export default function AdminDashboardPage() {
   const [selectedDeptForEdit, setSelectedDeptForEdit] = useState(null);
   const [isDeptLoading, setIsDeptLoading] = useState(true);
   const [deptSearch, setDeptSearch] = useState("");
+  const [selectedAnalyticsDept, setSelectedAnalyticsDept] = useState("");
 
   // Staff Management States
   const [staffList, setStaffList] = useState([]);
@@ -328,6 +331,19 @@ export default function AdminDashboardPage() {
               {staffList.length}
             </span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("analytics")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "analytics"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Award className="size-3.5 text-amber-500" />
+            <span>SLA Benchmarks</span>
+          </button>
         </div>
 
         {/* TAB 1: INCIDENT TRIAGE & AUDIT */}
@@ -544,6 +560,45 @@ export default function AdminDashboardPage() {
                 setIsStaffModalOpen(true);
               }}
             />
+          </div>
+        )}
+
+        {/* TAB 4: SLA BENCHMARKS & DEPARTMENT ANALYTICS */}
+        {activeTab === "analytics" && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+              <div>
+                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+                  Municipal SLA Audit &amp; Performance Scorecard
+                </h2>
+                <p className="text-xs text-muted">
+                  Audit turnaround compliance against statutory priority targets and monitor verified citizen feedback.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Select Department:
+                </span>
+                <select
+                  value={selectedAnalyticsDept || (allDepartments[0]?._id || "")}
+                  onChange={(e) => setSelectedAnalyticsDept(e.target.value)}
+                  className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:border-teal-500"
+                >
+                  {allDepartments.map((dept) => (
+                    <option key={dept._id} value={dept._id}>
+                      {dept.code} - {dept.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            {allDepartments.length > 0 && (
+              <DepartmentAnalyticsView
+                departmentId={selectedAnalyticsDept || allDepartments[0]?._id}
+              />
+            )}
           </div>
         )}
 

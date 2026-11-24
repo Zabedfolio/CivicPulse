@@ -10,6 +10,7 @@ import { PaginationControl } from "@/components/ui/PaginationControl";
 import { VerifyIssueModal } from "@/components/management/VerifyIssueModal";
 import { StaffDataTable } from "@/components/staff/StaffDataTable";
 import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
+import { DepartmentAnalyticsView } from "@/components/analytics/DepartmentAnalyticsView";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   Building2,
@@ -23,6 +24,7 @@ import {
   Activity,
   UserPlus,
   Search,
+  Award,
 } from "lucide-react";
 
 export default function DepartmentDashboardPage() {
@@ -245,6 +247,19 @@ export default function DepartmentDashboardPage() {
               {staffList.length}
             </span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("analytics")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "analytics"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <Award className="size-3.5 text-amber-500" />
+            <span>Analytics &amp; SLA</span>
+          </button>
         </div>
 
         {/* TAB 1: INCIDENT TRIAGE */}
@@ -390,6 +405,16 @@ export default function DepartmentDashboardPage() {
                 setSelectedStaffForEdit(member);
                 setIsStaffModalOpen(true);
               }}
+            />
+          </div>
+        )}
+
+        {/* TAB 3: ANALYTICS & SLA SCORECARD */}
+        {activeTab === "analytics" && (
+          <div className="space-y-6">
+            <DepartmentAnalyticsView
+              departmentId={user?.department?._id || user?.department}
+              departmentName={user?.department?.name || "Department"}
             />
           </div>
         )}
