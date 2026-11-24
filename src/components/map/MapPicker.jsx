@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { MapContainer, TileLayer, Marker, useMap, useMapEvents } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -80,6 +80,23 @@ export default function MapPicker({
   zoom = 15,
   className = "h-[400px] w-full rounded-2xl overflow-hidden",
 }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const el = document.getElementById("civic-map-picker-container");
+    if (el && el._leaflet_id) {
+      el._leaflet_id = null;
+    }
+    setIsMounted(true);
+
+    return () => {
+      const container = document.getElementById("civic-map-picker-container");
+      if (container && container._leaflet_id) {
+        container._leaflet_id = null;
+      }
+    };
+  }, []);
+
   const markerIcon = useMemo(() => createPulseIcon(), []);
   const markerRef = useRef(null);
 
@@ -98,9 +115,18 @@ export default function MapPicker({
     [onLocationSelect]
   );
 
+  if (!isMounted) {
+    return (
+      <div className={`relative ${className} flex items-center justify-center bg-slate-100 dark:bg-slate-800`}>
+        <div className="size-6 rounded-full border-2 border-teal-600 border-t-transparent animate-spin" />
+      </div>
+    );
+  }
+
   return (
     <div className={`relative ${className}`}>
       <MapContainer
+        id="civic-map-picker-container"
         center={[latitude, longitude]}
         zoom={zoom}
         scrollWheelZoom={true}

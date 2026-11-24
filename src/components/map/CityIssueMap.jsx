@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -72,6 +72,24 @@ export function CityIssueMap({
   zoom = 13,
   recenterTrigger = 0,
 }) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Guard against React 18 Strict Mode and Fast Refresh double-initialization
+  useEffect(() => {
+    const el = document.getElementById("city-issue-map-container");
+    if (el && el._leaflet_id) {
+      el._leaflet_id = null;
+    }
+    setIsMounted(true);
+
+    return () => {
+      const container = document.getElementById("city-issue-map-container");
+      if (container && container._leaflet_id) {
+        container._leaflet_id = null;
+      }
+    };
+  }, []);
+
   // Pre-generate category icons cache
   const iconCache = useMemo(() => {
     const cache = {};
@@ -82,9 +100,21 @@ export function CityIssueMap({
     return cache;
   }, []);
 
+  if (!isMounted) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center bg-slate-100 dark:bg-slate-900 text-muted">
+        <div className="size-8 rounded-full border-2 border-[#0D9488] border-t-transparent animate-spin mb-3" />
+        <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+          Initializing Chattogram GIS Map...
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
       <MapContainer
+        id="city-issue-map-container"
         center={center}
         zoom={zoom}
         scrollWheelZoom={true}
