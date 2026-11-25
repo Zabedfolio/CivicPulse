@@ -122,7 +122,7 @@ export function RoleExperienceTabs() {
   const current = ROLES_INFO[activeTab];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-slate-50/70 dark:bg-slate-950/50 rounded-3xl border border-border my-12">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 bg-slate-50/70 dark:bg-slate-950/50 rounded-3xl border border-border my-8 sm:my-12">
       <div className="text-center max-w-2xl mx-auto mb-12">
         <h2 className="text-xs font-bold uppercase tracking-wider text-[#0D9488] mb-2">
           Tailored Workspaces
@@ -136,7 +136,7 @@ export function RoleExperienceTabs() {
       </div>
 
       {/* Role Navigation Pills */}
-      <div className="flex flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto mb-10 p-1.5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-xs">
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-2 max-w-3xl mx-auto mb-8 sm:mb-10 p-1.5 rounded-2xl bg-white dark:bg-slate-900 border border-border shadow-xs">
         {ROLES_INFO.map((item, idx) => {
           const Icon = item.icon;
           const isActive = activeTab === idx;
@@ -146,7 +146,7 @@ export function RoleExperienceTabs() {
               type="button"
               onClick={() => setActiveTab(idx)}
               className={cn(
-                "flex-1 min-w-[140px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer select-none",
+                "min-w-0 sm:flex-1 sm:min-w-[140px] min-h-[44px] py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all cursor-pointer select-none",
                 isActive
                   ? "bg-teal-50 dark:bg-teal-950/80 text-[#0D9488] border border-teal-200 dark:border-teal-800 shadow-xs"
                   : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"

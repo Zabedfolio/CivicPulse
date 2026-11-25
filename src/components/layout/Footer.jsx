@@ -229,19 +229,19 @@ export function Footer() {
                   <span>Subscribed! You will receive ward-level advisories.</span>
                 </div>
               ) : (
-                <form onSubmit={handleSubscribe} className="flex gap-2">
+                <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-2">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter citizen email..."
                     required
-                    className="flex-1 min-w-0 px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
+                    className="flex-1 min-w-0 min-h-[42px] px-3 py-2 text-xs bg-slate-950 border border-slate-700 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-colors"
                   />
                   <MagneticButton
                     variant="primary"
                     size="sm"
-                    className="px-4 text-xs font-bold shrink-0"
+                    className="w-full sm:w-auto justify-center min-h-[42px] px-4 text-xs font-bold shrink-0"
                     type="submit"
                   >
                     Subscribe
@@ -265,7 +265,7 @@ export function Footer() {
             </span>
           </div>
 
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-5">
             <Link href="/about" className="hover:text-slate-300 transition-colors">
               Privacy Policy
             </Link>

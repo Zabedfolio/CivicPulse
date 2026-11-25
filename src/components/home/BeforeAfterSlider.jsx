@@ -82,7 +82,7 @@ export function BeforeAfterSlider() {
   };
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20">
       <div className="text-center max-w-2xl mx-auto mb-10">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-teal-50 border border-teal-200 text-[#0D9488] dark:bg-teal-950/60 dark:border-teal-800 mb-3">
           <Sparkles className="w-3.5 h-3.5" />
@@ -126,7 +126,7 @@ export function BeforeAfterSlider() {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
           onTouchMove={handleTouchMove}
-          className="relative h-80 sm:h-96 rounded-2xl overflow-hidden select-none cursor-ew-resize border border-border"
+          className="relative h-64 sm:h-96 rounded-2xl overflow-hidden select-none cursor-ew-resize touch-pan-y border border-border"
         >
           {/* "AFTER" Layer (Full width underneath) */}
           <div className="absolute inset-0 select-none overflow-hidden">

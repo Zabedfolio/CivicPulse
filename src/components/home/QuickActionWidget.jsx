@@ -95,9 +95,9 @@ export function QuickActionWidget() {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-teal-200 dark:border-teal-900 shadow-[0_20px_50px_-20px_rgba(20,184,166,0.25)] p-5 sm:p-7 text-left relative z-20">
+    <div className="w-full max-w-2xl mx-auto rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-teal-200 dark:border-teal-900 shadow-[0_20px_50px_-20px_rgba(20,184,166,0.25)] p-4 sm:p-7 text-left relative z-20">
       {/* Tab Switcher */}
-      <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 mb-6">
+      <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 mb-5 sm:mb-6">
         <button
           type="button"
           onClick={() => {
@@ -105,25 +105,25 @@ export function QuickActionWidget() {
             setSearchedTicket(null);
           }}
           className={cn(
-            "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-center select-none cursor-pointer",
+            "flex-1 min-h-[44px] py-2 px-2 rounded-xl text-[11px] sm:text-sm font-bold transition-all duration-200 text-center select-none cursor-pointer",
             tab === "report"
               ? "bg-white dark:bg-slate-700 text-[#0D9488] shadow-sm"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
           )}
         >
-          🚀 Report a Problem Fast
+          🚀 Report a Problem
         </button>
         <button
           type="button"
           onClick={() => setTab("track")}
           className={cn(
-            "flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 text-center select-none cursor-pointer",
+            "flex-1 min-h-[44px] py-2 px-2 rounded-xl text-[11px] sm:text-sm font-bold transition-all duration-200 text-center select-none cursor-pointer",
             tab === "track"
               ? "bg-white dark:bg-slate-700 text-[#0D9488] shadow-sm"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900"
           )}
         >
-          🔍 Track Repair Status by ID
+          🔍 Track by Ticket ID
         </button>
       </div>
 
