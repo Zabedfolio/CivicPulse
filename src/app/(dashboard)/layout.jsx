@@ -104,9 +104,9 @@ export default function DashboardLayout({ children }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col sm:flex-row p-1.5 sm:p-4 gap-2.5 sm:gap-4 overflow-x-clip">
-      {/* Motion Brew SidebarNav */}
-      <div className="shrink-0 flex flex-col justify-between">
+    <div className="min-h-screen sm:h-screen sm:overflow-hidden bg-slate-100 dark:bg-slate-950 flex flex-col sm:flex-row p-1.5 sm:p-4 gap-2.5 sm:gap-4 overflow-x-clip">
+      {/* Motion Brew SidebarNav (Fixed Viewport Height on sm+) */}
+      <div className="shrink-0 sm:h-full flex flex-col">
         <SidebarNav
           brand="CivicPulse"
           logo={logoNode}
@@ -121,24 +121,13 @@ export default function DashboardLayout({ children }) {
               "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=96&h=96&fit=crop&crop=faces",
           }}
           onSettings={() => router.push("/profile")}
-          className="shadow-xl border border-slate-200/80 dark:border-slate-800"
+          onSignOut={handleSignOut}
+          className="shadow-xl border border-slate-200/80 dark:border-slate-800 sm:h-full"
         />
-
-        {/* Desktop Quick Sign Out Pill below sidebar */}
-        <div className="hidden sm:block mt-2 px-2">
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="w-full flex items-center justify-center gap-2 py-2 px-3 rounded-2xl text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors border border-transparent hover:border-rose-200 dark:hover:border-rose-900 cursor-pointer"
-          >
-            <LogOut className="size-3.5" />
-            <span>Sign Out</span>
-          </button>
-        </div>
       </div>
 
-      {/* Main Content Area */}
-      <main className="flex-1 min-w-0 bg-white dark:bg-slate-900/60 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-3.5 sm:p-6 lg:p-8 overflow-y-auto flex flex-col">
+      {/* Main Content Area (Independently Scrollable on sm+) */}
+      <main className="flex-1 min-w-0 sm:h-full bg-white dark:bg-slate-900/60 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-3.5 sm:p-6 lg:p-8 sm:overflow-y-auto flex flex-col">
         {/* Dashboard Top Header: Context Path, Mobile Profile/SignOut & Notification Bell */}
         <div className="flex items-center justify-between gap-2 pb-3.5 sm:pb-5 border-b border-slate-100 dark:border-slate-800/80 mb-5 sm:mb-6 shrink-0">
           <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">

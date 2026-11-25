@@ -2423,6 +2423,7 @@ export const SidebarNav = React.forwardRef(
       onCollapsedChange,
       user = DEFAULT_USER,
       onSettings,
+      onSignOut,
       mobile = "auto",
       className,
     },
@@ -2918,6 +2919,43 @@ export const SidebarNav = React.forwardRef(
 
           {/* Account. */}
           <motion.div variants={ROW}>
+            {onSignOut && (
+              <div className="px-3 mb-2">
+                <button
+                  type="button"
+                  onClick={onSignOut}
+                  onPointerEnter={(e) => showTip(e.currentTarget, "Sign Out")}
+                  onPointerLeave={() => setTip(null)}
+                  className="w-full h-10 flex items-center rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors cursor-pointer"
+                >
+                  <span className="grid size-10 shrink-0 place-items-center">
+                    <svg
+                      className="size-[18px]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                      <polyline points="16 17 21 12 16 7" />
+                      <line x1="21" y1="12" x2="9" y2="12" />
+                    </svg>
+                  </span>
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <motion.span
+                      className="block whitespace-nowrap pl-1.5 text-left text-xs font-bold"
+                      style={{ width: LABEL_W - 4 }}
+                      {...fade(order++)}
+                    >
+                      Sign Out
+                    </motion.span>
+                  </div>
+                </button>
+              </div>
+            )}
             <div aria-hidden className="mb-3 h-px bg-[#242423]/[0.07]" />
             <div className="flex h-10 items-center px-3">
               <span
