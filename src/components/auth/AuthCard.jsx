@@ -582,7 +582,7 @@ export function AuthCard({
       animate={seen || still ? { opacity: 1, y: 0 } : undefined}
       transition={{ duration: 0.55, ease: GLIDE }}
       className={cn(
-        "w-[400px] max-w-full rounded-[32px] bg-white dark:bg-slate-900 p-8 text-slate-800 dark:text-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_16px_40px_-16px_rgba(20,184,166,0.15)] border border-border dark:border-slate-800",
+        "w-[400px] max-w-full rounded-[32px] bg-white dark:bg-slate-900 p-5 sm:p-8 text-slate-800 dark:text-slate-100 shadow-[0_1px_3px_rgba(0,0,0,0.05),0_16px_40px_-16px_rgba(20,184,166,0.15)] border border-border dark:border-slate-800",
         className
       )}
     >

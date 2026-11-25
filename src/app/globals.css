@@ -49,6 +49,11 @@
   --border: #334155;
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   color: var(--text);
   background-color: var(--background);

@@ -14,7 +14,7 @@ export default function NewIssuePage() {
   return (
     <div className="min-h-screen pt-28 pb-24 px-4 sm:px-6 lg:px-8 bg-slate-50/70 dark:bg-slate-950 relative overflow-hidden">
       {/* Ambient decorative gradient */}
-      <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-[750px] h-[350px] bg-gradient-to-tr from-teal-400/15 via-emerald-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-full max-w-[750px] h-[350px] bg-gradient-to-tr from-teal-400/15 via-emerald-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-4xl mx-auto">
         {/* Navigation / Breadcrumb */}

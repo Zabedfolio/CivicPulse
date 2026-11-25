@@ -9,8 +9,8 @@ export default function RegisterPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center pt-24 pb-12 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-slate-950 relative overflow-hidden">
       {/* Background radial gradient glow */}
-      <div className="absolute inset-0 -z-10 flex items-center justify-center">
-        <div className="w-[500px] h-[500px] bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-70 pointer-events-none" />
+      <div className="absolute inset-0 -z-10 flex items-center justify-center overflow-hidden">
+        <div className="w-full max-w-[500px] h-[500px] bg-gradient-to-tr from-teal-400/20 to-cyan-400/20 rounded-full blur-3xl opacity-70 pointer-events-none" />
       </div>
 
       <div className="w-full max-w-[400px] flex flex-col items-center">
@@ -26,7 +26,7 @@ export default function RegisterPage() {
 
         <React.Suspense
           fallback={
-            <div className="w-[400px] h-[480px] rounded-[32px] bg-white dark:bg-slate-900 border border-border animate-pulse flex items-center justify-center">
+            <div className="w-full max-w-[400px] h-[480px] rounded-[32px] bg-white dark:bg-slate-900 border border-border animate-pulse flex items-center justify-center">
               <div className="w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full animate-spin" />
             </div>
           }
