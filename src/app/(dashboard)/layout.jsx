@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -15,6 +15,16 @@ export default function DashboardLayout({ children }) {
   const router = useRouter();
   const { data: session } = useSession();
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // TAB-01: Auto-collapse sidebar into slim icon rail on 640px–1023px tablets
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 640px) and (max-width: 1023px)");
+    const sync = () => setSidebarCollapsed(mq.matches);
+    sync();
+    mq.addEventListener("change", sync);
+    return () => mq.removeEventListener("change", sync);
+  }, []);
 
   const user = session?.user;
   const role = user?.role || "citizen";
@@ -122,6 +132,8 @@ export default function DashboardLayout({ children }) {
           }}
           onSettings={() => router.push("/profile")}
           onSignOut={handleSignOut}
+          collapsed={sidebarCollapsed}
+          onCollapsedChange={setSidebarCollapsed}
           className="shadow-xl border border-slate-200/80 dark:border-slate-800 sm:h-full"
         />
       </div>

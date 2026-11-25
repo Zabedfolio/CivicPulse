@@ -136,8 +136,8 @@ export function Navbar() {
                     user.name?.charAt(0) || <User className="w-3.5 h-3.5" />
                   )}
                 </div>
-                <span className="max-w-[130px] truncate">{user.name}</span>
-                <span className="text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200 dark:bg-teal-950 dark:border-teal-800">
+                <span className="hidden lg:inline max-w-[130px] truncate">{user.name}</span>
+                <span className="hidden lg:inline-flex text-[10px] uppercase font-semibold px-1.5 py-0.5 rounded-full bg-teal-50 text-[#0D9488] border border-teal-200 dark:bg-teal-950 dark:border-teal-800">
                   {user.role || "citizen"}
                 </span>
               </button>
