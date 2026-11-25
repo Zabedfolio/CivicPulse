@@ -274,7 +274,7 @@ export function DepartmentAnalyticsView({
           </h3>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-6 gap-2 pt-1 text-center">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 pt-1 text-center">
           {Object.entries(statusCounts).map(([sName, sCount]) => (
             <div
               key={sName}

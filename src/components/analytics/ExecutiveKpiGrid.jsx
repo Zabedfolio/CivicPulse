@@ -17,12 +17,12 @@ import {
 export function ExecutiveKpiGrid({ overview, isLoading = false }) {
   if (isLoading || !overview) {
     return (
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         {[...Array(5)].map((_, idx) => (
           <div
             key={idx}
             className={`h-28 sm:h-32 rounded-2xl bg-slate-100 dark:bg-slate-800/60 animate-pulse border border-slate-200/60 dark:border-slate-800 ${
-              idx === 0 ? "col-span-2 sm:col-span-1" : ""
+              idx === 0 ? "col-span-2 lg:col-span-1" : ""
             }`}
           />
         ))}
@@ -31,8 +31,8 @@ export function ExecutiveKpiGrid({ overview, isLoading = false }) {
   }
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-      <div className="col-span-2 sm:col-span-1">
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="col-span-2 lg:col-span-1">
         <KpiMetricCard
           title="Total Incidents"
           value={overview.totalIssues}

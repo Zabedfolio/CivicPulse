@@ -97,7 +97,7 @@ export function DepartmentLeaderboard({ departments = [], isLoading = false }) {
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] font-bold uppercase tracking-wider text-muted">
                 <th scope="col" className="pb-2.5 pr-3">Division</th>
-                <th scope="col" className="pb-2.5 px-3 text-right">Assigned</th>
+                <th scope="col" className="hidden lg:table-cell pb-2.5 px-3 text-right">Assigned</th>
                 <th scope="col" className="pb-2.5 px-3 text-right">Resolved</th>
                 <th scope="col" className="pb-2.5 px-3 w-40">Resolution Rate</th>
                 <th scope="col" className="pb-2.5 px-3 text-right">Avg Turnaround</th>
@@ -129,7 +129,7 @@ export function DepartmentLeaderboard({ departments = [], isLoading = false }) {
                       </div>
                     </div>
                   </td>
-                  <td className="py-3 px-3 text-right font-mono font-bold text-slate-700 dark:text-slate-300">
+                  <td className="hidden lg:table-cell py-3 px-3 text-right font-mono font-bold text-slate-700 dark:text-slate-300">
                     {dept.totalAssigned}
                   </td>
                   <td className="py-3 px-3 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">

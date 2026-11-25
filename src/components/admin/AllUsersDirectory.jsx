@@ -120,17 +120,19 @@ export function AllUsersDirectory({ departments = [] }) {
   return (
     <div className="space-y-6">
       {/* Role Summary Strip */}
-      <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
         {[
           { label: "Total Accounts", value: counts.total, accent: "text-slate-900 dark:text-white" },
           { label: "Citizens", value: counts.citizen, accent: "text-slate-600 dark:text-slate-300" },
           { label: "Field Staff", value: counts.staff, accent: "text-blue-600 dark:text-blue-400" },
           { label: "Managers", value: counts.manager, accent: "text-[#0D9488] dark:text-teal-400" },
           { label: "Admins", value: counts.admin, accent: "text-rose-600 dark:text-rose-400" },
-        ].map((card) => (
+        ].map((card, idx) => (
           <div
             key={card.label}
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs"
+            className={`p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs ${
+              idx === 0 ? "col-span-2 lg:col-span-1" : ""
+            }`}
           >
             <div className="text-[10px] font-bold uppercase tracking-wider text-muted">
               {card.label}
@@ -343,7 +345,7 @@ export function AllUsersDirectory({ departments = [] }) {
                 <th scope="col" className="py-3.5 px-5">User Identity</th>
                 <th scope="col" className="py-3.5 px-4">Role</th>
                 <th scope="col" className="py-3.5 px-4">Department</th>
-                <th scope="col" className="py-3.5 px-4">Joined</th>
+                <th scope="col" className="hidden lg:table-cell py-3.5 px-4">Joined</th>
                 <th scope="col" className="py-3.5 px-5 text-right">Account Status</th>
               </tr>
             </thead>
@@ -450,7 +452,7 @@ export function AllUsersDirectory({ departments = [] }) {
                         )}
                       </td>
 
-                      <td className="py-3.5 px-4 text-[11px] font-semibold text-muted whitespace-nowrap">
+                      <td className="hidden lg:table-cell py-3.5 px-4 text-[11px] font-semibold text-muted whitespace-nowrap">
                         {new Date(u.createdAt).toLocaleDateString("en-US", {
                           month: "short",
                           day: "numeric",

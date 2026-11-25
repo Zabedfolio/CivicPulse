@@ -207,8 +207,8 @@ export function IssueDataTable({
               <th className="px-4 py-3.5">Category</th>
               <th className="px-4 py-3.5">Priority</th>
               <th className="px-4 py-3.5">Status</th>
-              <th className="px-4 py-3.5">Reporter</th>
-              <th className="px-4 py-3.5">Reported</th>
+              <th className="hidden lg:table-cell px-4 py-3.5">Reporter</th>
+              <th className="hidden lg:table-cell px-4 py-3.5">Reported</th>
               <th className="px-5 py-3.5 text-right">Action</th>
             </tr>
           </thead>
@@ -295,7 +295,7 @@ export function IssueDataTable({
                   </td>
 
                   {/* Reporter */}
-                  <td className="px-4 py-4 whitespace-nowrap">
+                  <td className="hidden lg:table-cell px-4 py-4 whitespace-nowrap">
                     <div className="flex items-center gap-2">
                       <div className="size-7 rounded-full bg-teal-100 dark:bg-teal-950 text-[#0D9488] flex items-center justify-center font-bold text-xs uppercase overflow-hidden shrink-0">
                         {issue.reporter?.image ? (
@@ -320,7 +320,7 @@ export function IssueDataTable({
                   </td>
 
                   {/* Reported Date */}
-                  <td className="px-4 py-4 whitespace-nowrap text-muted text-[11px]">
+                  <td className="hidden lg:table-cell px-4 py-4 whitespace-nowrap text-muted text-[11px]">
                     <div className="flex items-center gap-1">
                       <Calendar className="size-3 text-slate-400" />
                       <span>{formattedDate}</span>
