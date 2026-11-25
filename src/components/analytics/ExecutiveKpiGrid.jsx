@@ -17,11 +17,13 @@ import {
 export function ExecutiveKpiGrid({ overview, isLoading = false }) {
   if (isLoading || !overview) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
         {[...Array(5)].map((_, idx) => (
           <div
             key={idx}
-            className="h-32 rounded-2xl bg-slate-100 dark:bg-slate-800/60 animate-pulse border border-slate-200/60 dark:border-slate-800"
+            className={`h-28 sm:h-32 rounded-2xl bg-slate-100 dark:bg-slate-800/60 animate-pulse border border-slate-200/60 dark:border-slate-800 ${
+              idx === 0 ? "col-span-2 sm:col-span-1" : ""
+            }`}
           />
         ))}
       </div>
@@ -29,17 +31,19 @@ export function ExecutiveKpiGrid({ overview, isLoading = false }) {
   }
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-      <KpiMetricCard
-        title="Total Incidents"
-        value={overview.totalIssues}
-        subtitle="Reported across all wards"
-        badgeText={`${overview.resolutionRate}% resolved`}
-        icon={FileText}
-        accentClass="text-slate-900 dark:text-white"
-        badgeBgClass="bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
-        delay={0}
-      />
+    <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+      <div className="col-span-2 sm:col-span-1">
+        <KpiMetricCard
+          title="Total Incidents"
+          value={overview.totalIssues}
+          subtitle="Reported across all wards"
+          badgeText={`${overview.resolutionRate}% resolved`}
+          icon={FileText}
+          accentClass="text-slate-900 dark:text-white"
+          badgeBgClass="bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+          delay={0}
+        />
+      </div>
 
       <KpiMetricCard
         title="Pending Triage"

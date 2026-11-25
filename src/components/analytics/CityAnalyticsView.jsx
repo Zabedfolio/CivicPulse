@@ -111,13 +111,13 @@ export function CityAnalyticsView({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full sm:w-auto">
           {!lockedDepartmentId && departments.length > 0 && (
             <select
               aria-label="Filter analytics by municipal department"
               value={selectedDept}
               onChange={(e) => setSelectedDept(e.target.value)}
-              className="px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-[#0D9488]"
+              className="w-full sm:w-auto min-h-[40px] sm:min-h-0 px-3.5 py-2 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:border-[#0D9488]"
             >
               <option value="all">All Municipal Divisions (City-Wide)</option>
               {departments.map((dept) => (
@@ -132,7 +132,7 @@ export function CityAnalyticsView({
             type="button"
             onClick={fetchAnalytics}
             disabled={isLoading}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
+            className="w-full sm:w-auto min-h-[40px] sm:min-h-0 inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors cursor-pointer disabled:opacity-50"
           >
             <RefreshCw
               className={`size-3.5 ${isLoading ? "animate-spin" : ""}`}

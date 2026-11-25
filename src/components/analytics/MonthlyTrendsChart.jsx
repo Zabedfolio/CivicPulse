@@ -90,7 +90,7 @@ export function MonthlyTrendsChart({
         )}
       </div>
 
-      <div className="w-full h-72">
+      <div className="w-full h-60 sm:h-72">
         {isLoading || !mounted ? (
           <div className="w-full h-full rounded-2xl bg-slate-100 dark:bg-slate-800/50 animate-pulse" />
         ) : trends.length === 0 ? (
@@ -113,7 +113,8 @@ export function MonthlyTrendsChart({
               <CartesianGrid strokeDasharray="3 3" stroke="#94A3B8" strokeOpacity={0.2} vertical={false} />
               <XAxis
                 dataKey="shortMonth"
-                tick={{ fontSize: 11, fill: "#64748B", fontWeight: 600 }}
+                minTickGap={18}
+                tick={{ fontSize: 10, fill: "#64748B", fontWeight: 600 }}
                 axisLine={false}
                 tickLine={false}
               />
