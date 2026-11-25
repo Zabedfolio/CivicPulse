@@ -17,6 +17,7 @@ import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
 import { DepartmentAnalyticsView } from "@/components/analytics/DepartmentAnalyticsView";
 import { CityAnalyticsView } from "@/components/analytics/CityAnalyticsView";
 import { ActivityLogList } from "@/components/admin/ActivityLogList";
+import { AllUsersDirectory } from "@/components/admin/AllUsersDirectory";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   ShieldCheck,
@@ -362,6 +363,19 @@ export default function AdminDashboardPage() {
             <ScrollText className="size-3.5 text-purple-600" />
             <span>Activity Log</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("users")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "users"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <ShieldCheck className="size-3.5 text-rose-600" />
+            <span>All Users</span>
+          </button>
         </div>
 
         {/* TAB 1: INCIDENT TRIAGE & AUDIT */}
@@ -626,6 +640,11 @@ export default function AdminDashboardPage() {
 
         {/* TAB 5: SYSTEM-WIDE ACTIVITY LOG STREAM */}
         {activeTab === "activity" && <ActivityLogList />}
+
+        {/* TAB 6: FULL MUNICIPAL USER DIRECTORY */}
+        {activeTab === "users" && (
+          <AllUsersDirectory departments={allDepartments} />
+        )}
 
         {/* Triage Decision Modal */}
         <VerifyIssueModal
