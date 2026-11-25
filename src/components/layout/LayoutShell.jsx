@@ -44,9 +44,17 @@ export function LayoutShell({ children }) {
 
   return (
     <>
-      {mounted && !isDashboard && <Navbar />}
+      {mounted && !isDashboard && (
+        <div className="print:hidden">
+          <Navbar />
+        </div>
+      )}
       <main className="flex-1 flex flex-col">{children}</main>
-      {mounted && !isFooterSuppressed && <Footer />}
+      {mounted && !isFooterSuppressed && (
+        <div className="print:hidden">
+          <Footer />
+        </div>
+      )}
     </>
   );
 }

@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
 import { StatusTimeline } from "@/components/issues/StatusTimeline";
+import { IssueReportPDF } from "@/components/issues/IssueReportPDF";
+import { DownloadPdfButton } from "@/components/ui/DownloadPdfButton";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import { FeedbackCard } from "@/components/feedback/FeedbackCard";
 import { FeedbackPromptModal } from "@/components/feedback/FeedbackPromptModal";
@@ -168,13 +170,13 @@ export default function IssueDetailPage() {
   const coordinates = issue.location?.coordinates || [91.8317, 22.3384]; // [lng, lat]
 
   return (
-    <div className="min-h-screen pt-28 pb-24 px-4 sm:px-6 lg:px-8 bg-slate-50/70 dark:bg-slate-950 relative overflow-hidden">
+    <div className="min-h-screen pt-28 pb-24 px-4 sm:px-6 lg:px-8 bg-slate-50/70 dark:bg-slate-950 relative overflow-hidden print:min-h-0 print:pt-0 print:pb-0 print:px-0 print:bg-white">
       {/* Ambient background glow */}
-      <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-teal-400/15 via-emerald-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute left-1/2 -top-40 -translate-x-1/2 w-[700px] h-[350px] bg-gradient-to-tr from-teal-400/15 via-emerald-400/15 to-transparent rounded-full blur-3xl pointer-events-none -z-10 print:hidden" />
 
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-6xl mx-auto print:hidden">
         {/* Navigation Breadcrumbs */}
-        <div className="mb-6 flex items-center justify-between">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/my-reports"
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-[#0D9488] transition-colors group"
@@ -182,10 +184,11 @@ export default function IssueDetailPage() {
             <ArrowLeft className="w-3.5 h-3.5 transition-transform group-hover:-translate-x-0.5" />
             Back to My Reports
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <span className="text-[11px] font-mono font-bold text-[#0D9488]">
               Ticket #{ticketId}
             </span>
+            <DownloadPdfButton ticketId={ticketId} />
           </div>
         </div>
 
@@ -377,6 +380,14 @@ export default function IssueDetailPage() {
           }}
         />
       </div>
+
+      {/* Printable Official A4 Municipal Dossier */}
+      <IssueReportPDF
+        issue={issue}
+        history={history}
+        feedback={feedback}
+        ticketId={ticketId}
+      />
     </div>
   );
 }
