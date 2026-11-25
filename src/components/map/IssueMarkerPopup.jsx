@@ -33,7 +33,7 @@ export function IssueMarkerPopup({ issue }) {
   const ticketId = `CP-2026-${issue._id ? issue._id.toString().slice(-4).toUpperCase() : "MAP"}`;
 
   return (
-    <div className="w-64 sm:w-72 p-1 text-slate-900 dark:text-white font-sans">
+    <div className="w-[min(260px,calc(100vw-4.5rem))] sm:w-72 p-1 text-slate-900 dark:text-white font-sans">
       {/* Thumbnail */}
       <div className="relative w-full h-32 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 mb-2.5">
         {issue.image?.url ? (

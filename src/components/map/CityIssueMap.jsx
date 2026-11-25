@@ -93,7 +93,7 @@ export function CityIssueMap({
     });
     mapRef.current = map;
 
-    L.control.zoom({ position: "bottomright" }).addTo(map);
+    L.control.zoom({ position: "topright" }).addTo(map);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       attribution:
@@ -173,6 +173,8 @@ export function CityIssueMap({
         className: "civic-pulse-popup",
         offset: [0, -28],
         closeButton: false,
+        autoPanPaddingTopLeft: L.point(16, 88),
+        autoPanPaddingBottomRight: L.point(16, 92),
       });
 
       markersLayerRef.current.addLayer(marker);
@@ -180,7 +182,7 @@ export function CityIssueMap({
   }, [issues, iconCache]);
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
+    <div className="civic-map-container relative w-full h-full overflow-hidden bg-slate-100 dark:bg-slate-900">
       <div
         ref={containerRef}
         className="w-full h-full z-0"
