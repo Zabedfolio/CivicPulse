@@ -8,7 +8,7 @@ import { useSession, signOut } from "@/lib/auth-client";
 import { SidebarNav } from "@/components/ui/SidebarNav";
 import { ReportIssueModal } from "@/components/issues/ReportIssueModal";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
-import { LogOut } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 
 export default function DashboardLayout({ children }) {
   const pathname = usePathname();
@@ -104,7 +104,7 @@ export default function DashboardLayout({ children }) {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col sm:flex-row p-2 sm:p-4 gap-4">
+    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 flex flex-col sm:flex-row p-1.5 sm:p-4 gap-2.5 sm:gap-4 overflow-x-clip">
       {/* Motion Brew SidebarNav */}
       <div className="shrink-0 flex flex-col justify-between">
         <SidebarNav
@@ -138,21 +138,36 @@ export default function DashboardLayout({ children }) {
       </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 bg-white dark:bg-slate-900/60 rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-4 sm:p-6 lg:p-8 overflow-y-auto flex flex-col">
-        {/* Dashboard Top Header: Context Path & Notification Bell */}
-        <div className="flex items-center justify-between pb-4 sm:pb-5 border-b border-slate-100 dark:border-slate-800/80 mb-6 shrink-0">
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted">
-              CivicPulse Hub
+      <main className="flex-1 min-w-0 bg-white dark:bg-slate-900/60 rounded-2xl sm:rounded-3xl border border-slate-200/80 dark:border-slate-800/80 shadow-sm p-3.5 sm:p-6 lg:p-8 overflow-y-auto flex flex-col">
+        {/* Dashboard Top Header: Context Path, Mobile Profile/SignOut & Notification Bell */}
+        <div className="flex items-center justify-between gap-2 pb-3.5 sm:pb-5 border-b border-slate-100 dark:border-slate-800/80 mb-5 sm:mb-6 shrink-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-muted shrink-0">
+              CivicPulse
             </span>
-            <span className="text-slate-300 dark:text-slate-700">/</span>
-            <span className="text-xs font-extrabold text-[#0D9488] capitalize">
+            <span className="text-slate-300 dark:text-slate-700 shrink-0">/</span>
+            <span className="text-xs font-extrabold text-[#0D9488] capitalize truncate">
               {activeId.replace("-", " ")}
             </span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 shrink-0">
             <NotificationBell />
+            <Link
+              href="/profile"
+              aria-label="Account Profile & Settings"
+              className="sm:hidden min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-teal-50 hover:text-[#0D9488] transition-colors"
+            >
+              <User className="size-4" />
+            </Link>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              aria-label="Sign Out"
+              className="sm:hidden min-h-[40px] min-w-[40px] flex items-center justify-center rounded-xl bg-rose-50 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 hover:bg-rose-100 transition-colors cursor-pointer"
+            >
+              <LogOut className="size-4" />
+            </button>
           </div>
         </div>
 
