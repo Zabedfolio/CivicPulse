@@ -347,7 +347,7 @@ export function IssueReportForm({ onSuccess, onClose } = {}) {
           size="lg"
           type="submit"
           disabled={isSubmitting}
-          className="font-bold min-w-[180px] shadow-lg shadow-teal-500/20"
+          className="w-full sm:w-auto justify-center min-h-[46px] font-bold sm:min-w-[180px] shadow-lg shadow-teal-500/20"
         >
           {isSubmitting ? (
             <>

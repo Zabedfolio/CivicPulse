@@ -283,7 +283,7 @@ export function PasswordChangeForm() {
           size="md"
           type="submit"
           disabled={isSubmitting}
-          className="font-bold min-w-[160px]"
+          className="w-full sm:w-auto justify-center min-h-[44px] font-bold sm:min-w-[160px]"
         >
           {isSubmitting ? (
             <>
