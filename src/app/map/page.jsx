@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -48,7 +50,7 @@ export default function PublicCityMapPage() {
     if (selectedCategory !== "all") queryParams.set("category", selectedCategory);
     if (selectedStatus !== "all") queryParams.set("status", selectedStatus);
 
-    fetch(`http://localhost:5000/api/v1/issues/map/pins?${queryParams.toString()}`)
+    fetch(`${API_BASE_URL}/issues/map/pins?${queryParams.toString()}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch map pins");
         return res.json();

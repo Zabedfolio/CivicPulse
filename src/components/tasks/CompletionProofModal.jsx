@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -100,7 +102,7 @@ export function CompletionProofModal({
       formData.append("image", selectedFile);
 
       const uploadRes = await fetch(
-        `http://localhost:5000/api/v1/tasks/${task._id}/completion-photos`,
+        `${API_BASE_URL}/tasks/${task._id}/completion-photos`,
         {
           method: "POST",
           credentials: "include",
@@ -118,7 +120,7 @@ export function CompletionProofModal({
       // 2. If markAsCompleted is checked, trigger status transition
       if (markAsCompleted) {
         const statusRes = await fetch(
-          `http://localhost:5000/api/v1/tasks/${task._id}/status`,
+          `${API_BASE_URL}/tasks/${task._id}/status`,
           {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },

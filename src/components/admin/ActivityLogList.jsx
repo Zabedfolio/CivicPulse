@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useCallback } from "react";
 import { motion } from "motion/react";
 import { PaginationControl } from "@/components/ui/PaginationControl";
@@ -102,10 +104,10 @@ export function ActivityLogList() {
       if (search.trim()) params.append("search", search.trim());
 
       const [logsRes, statsRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/v1/activity?${params.toString()}`, {
+        fetch(`${API_BASE_URL}/activity?${params.toString()}`, {
           credentials: "include",
         }),
-        fetch("http://localhost:5000/api/v1/activity/stats", {
+        fetch(`${API_BASE_URL}/activity/stats`, {
           credentials: "include",
         }),
       ]);

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
@@ -72,7 +74,7 @@ export default function IssueDetailPage() {
       setFetchError("");
 
       try {
-        const res = await fetch(`http://localhost:5000/api/v1/issues/${issueId}`, {
+        const res = await fetch(`${API_BASE_URL}/issues/${issueId}`, {
           credentials: "include",
         });
 
@@ -90,7 +92,7 @@ export default function IssueDetailPage() {
           } else if (loadedIssue?._id) {
             try {
               const fbRes = await fetch(
-                `http://localhost:5000/api/v1/issues/${loadedIssue._id}/feedback`,
+                `${API_BASE_URL}/issues/${loadedIssue._id}/feedback`,
                 { credentials: "include" }
               );
               if (fbRes.ok) {

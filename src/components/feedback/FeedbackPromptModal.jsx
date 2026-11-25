@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { StarRatingInput } from "./StarRatingInput";
@@ -68,7 +70,7 @@ export function FeedbackPromptModal({
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/v1/issues/${issue._id}/feedback`,
+        `${API_BASE_URL}/issues/${issue._id}/feedback`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

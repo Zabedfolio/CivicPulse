@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useCallback } from "react";
 import { RoleGate } from "@/components/layout/RoleGate";
 import { useSession } from "@/lib/auth-client";
@@ -65,7 +67,7 @@ export default function DepartmentDashboardPage() {
 
   // Fetch departments for potential re-routing
   useEffect(() => {
-    fetch("http://localhost:5000/api/v1/departments", { credentials: "include" })
+    fetch(`${API_BASE_URL}/departments`, { credentials: "include" })
       .then((res) => res.json())
       .then((json) => {
         if (json.data?.departments) {
@@ -79,7 +81,7 @@ export default function DepartmentDashboardPage() {
   const fetchDepartmentStaff = useCallback(async () => {
     setIsStaffLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/users/staff?limit=100", {
+      const res = await fetch(`${API_BASE_URL}/users/staff?limit=100`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -116,7 +118,7 @@ export default function DepartmentDashboardPage() {
       params.set("sortBy", sortBy || "createdAt");
       params.set("sortOrder", sortOrder || "desc");
 
-      const res = await fetch(`http://localhost:5000/api/v1/issues?${params.toString()}`, {
+      const res = await fetch(`${API_BASE_URL}/issues?${params.toString()}`, {
         credentials: "include",
       });
 

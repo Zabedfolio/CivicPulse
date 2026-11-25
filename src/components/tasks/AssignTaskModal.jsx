@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { StatusBadge } from "@/components/ui/StatusBadge";
@@ -62,7 +64,7 @@ export function AssignTaskModal({
     let isMounted = true;
     setIsLoadingStaff(true);
 
-    fetch("http://localhost:5000/api/v1/tasks/workload", {
+    fetch(`${API_BASE_URL}/tasks/workload`, {
       credentials: "include",
     })
       .then((res) => res.json())
@@ -129,7 +131,7 @@ export function AssignTaskModal({
     setServerError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/tasks", {
+      const res = await fetch(`${API_BASE_URL}/tasks`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

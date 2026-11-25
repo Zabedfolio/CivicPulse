@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { AlertTriangle, Copy, ArrowRight, Loader2, ShieldAlert } from "lucide-react";
@@ -38,7 +40,7 @@ export function DuplicateAlertBanner({
       excludeId: issue._id || "",
     });
 
-    fetch(`http://localhost:5000/api/v1/issues/nearby?${queryParams.toString()}`)
+    fetch(`${API_BASE_URL}/issues/nearby?${queryParams.toString()}`)
       .then((res) => res.json())
       .then((data) => {
         if (isMounted) {

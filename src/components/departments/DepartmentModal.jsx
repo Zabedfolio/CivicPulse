@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -123,8 +125,8 @@ export function DepartmentModal({
 
     try {
       const url = isEditing
-        ? `http://localhost:5000/api/v1/departments/${department._id}`
-        : "http://localhost:5000/api/v1/departments";
+        ? `${API_BASE_URL}/departments/${department._id}`
+        : `${API_BASE_URL}/departments`;
       const method = isEditing ? "PATCH" : "POST";
 
       const payload = {

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useCallback } from "react";
 import { ExecutiveKpiGrid } from "./ExecutiveKpiGrid";
 import { MonthlyTrendsChart } from "./MonthlyTrendsChart";
@@ -44,22 +46,22 @@ export function CityAnalyticsView({
     try {
       const [ovRes, trRes, catRes, perfRes] = await Promise.all([
         fetch(
-          `http://localhost:5000/api/v1/analytics/overview${deptQuery ? `?${deptQuery}` : ""}`,
+          `${API_BASE_URL}/analytics/overview${deptQuery ? `?${deptQuery}` : ""}`,
           { credentials: "include" }
         ),
         fetch(
-          `http://localhost:5000/api/v1/analytics/monthly-trends?months=${months}${
+          `${API_BASE_URL}/analytics/monthly-trends?months=${months}${
             deptQuery ? `&${deptQuery}` : ""
           }`,
           { credentials: "include" }
         ),
         fetch(
-          `http://localhost:5000/api/v1/analytics/category-distribution${
+          `${API_BASE_URL}/analytics/category-distribution${
             deptQuery ? `?${deptQuery}` : ""
           }`,
           { credentials: "include" }
         ),
-        fetch(`http://localhost:5000/api/v1/analytics/department-performance`, {
+        fetch(`${API_BASE_URL}/analytics/department-performance`, {
           credentials: "include",
         }),
       ]);

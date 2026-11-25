@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState } from "react";
 import { User, Phone, Mail, Shield, Building, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
 import { profileSchema } from "@/validations/profile";
@@ -57,7 +59,7 @@ export function ProfileForm({ user, onProfileUpdated }) {
 
       // 2. Also sync custom phone field to backend if backend is reachable
       try {
-        await fetch("http://localhost:5000/api/v1/users/me", {
+        await fetch(`${API_BASE_URL}/users/me`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

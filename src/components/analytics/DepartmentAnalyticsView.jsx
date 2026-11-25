@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import {
@@ -39,7 +41,7 @@ export function DepartmentAnalyticsView({
     setIsLoading(true);
     setFetchError("");
 
-    fetch(`http://localhost:5000/api/v1/departments/${departmentId}/analytics`, {
+    fetch(`${API_BASE_URL}/departments/${departmentId}/analytics`, {
       credentials: "include",
     })
       .then((res) => {

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState } from "react";
 import { Lock, Eye, EyeOff, CheckCircle2, AlertCircle, Loader2, KeyRound, ShieldAlert } from "lucide-react";
 import { passwordChangeSchema } from "@/validations/profile";
@@ -70,7 +72,7 @@ export function PasswordChangeForm() {
       }
 
       // 2. Also call backend endpoint for verification
-      const backendRes = await fetch("http://localhost:5000/api/v1/users/me/password", {
+      const backendRes = await fetch(`${API_BASE_URL}/users/me/password`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

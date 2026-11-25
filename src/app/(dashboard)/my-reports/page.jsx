@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -65,7 +67,7 @@ export default function MyReportsPage() {
         }
 
         const res = await fetch(
-          `http://localhost:5000/api/v1/issues/mine?${queryParams.toString()}`,
+          `${API_BASE_URL}/issues/mine?${queryParams.toString()}`,
           {
             credentials: "include",
           }

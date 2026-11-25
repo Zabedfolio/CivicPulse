@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -81,7 +83,7 @@ export function IssueReportForm({ onSuccess, onClose } = {}) {
       }
 
       // Post to backend API
-      const res = await fetch("http://localhost:5000/api/v1/issues", {
+      const res = await fetch(`${API_BASE_URL}/issues`, {
         method: "POST",
         credentials: "include",
         body: formData,

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { PrioritySelector } from "./PrioritySelector";
@@ -92,7 +94,7 @@ export function VerifyIssueModal({
 
       // 1. Verify status (if checked and currently Submitted)
       if (markVerified && issue.status === "Submitted") {
-        const res = await fetch(`http://localhost:5000/api/v1/issues/${issue._id}/verify`, {
+        const res = await fetch(`${API_BASE_URL}/issues/${issue._id}/verify`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -107,7 +109,7 @@ export function VerifyIssueModal({
         latestIssue = json.data?.issue || latestIssue;
       } else if (priority !== issue.priority?.toLowerCase()) {
         // 2. Priority update only
-        const res = await fetch(`http://localhost:5000/api/v1/issues/${issue._id}/priority`, {
+        const res = await fetch(`${API_BASE_URL}/issues/${issue._id}/priority`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
@@ -124,7 +126,7 @@ export function VerifyIssueModal({
 
       // 3. Re-route department if a new department is selected
       if (targetDepartmentId && targetDepartmentId !== issue.department?._id) {
-        const res = await fetch(`http://localhost:5000/api/v1/issues/${issue._id}/reroute`, {
+        const res = await fetch(`${API_BASE_URL}/issues/${issue._id}/reroute`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

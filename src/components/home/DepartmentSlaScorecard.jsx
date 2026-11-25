@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { ShieldCheck, Clock, Award, Star, TrendingUp, CheckCircle, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -53,7 +55,7 @@ export function DepartmentSlaScorecard() {
 
   useEffect(() => {
     let isMounted = true;
-    fetch("http://localhost:5000/api/v1/departments/analytics/sla-scorecard")
+    fetch(`${API_BASE_URL}/departments/analytics/sla-scorecard`)
       .then((res) => {
         if (!res.ok) throw new Error("Scorecard fetch unsuccessful");
         return res.json();

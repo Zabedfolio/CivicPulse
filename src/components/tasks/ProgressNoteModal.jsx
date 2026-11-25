@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -67,7 +69,7 @@ export function ProgressNoteModal({
     setError("");
 
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/tasks/${task._id}/progress`, {
+      const res = await fetch(`${API_BASE_URL}/tasks/${task._id}/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { MagneticButton } from "@/components/ui/MagneticButton";
@@ -110,8 +112,8 @@ export function StaffMemberModal({
 
     try {
       const url = isEditing
-        ? `http://localhost:5000/api/v1/users/staff/${staffMember._id}`
-        : "http://localhost:5000/api/v1/users/staff";
+        ? `${API_BASE_URL}/users/staff/${staffMember._id}`
+        : `${API_BASE_URL}/users/staff`;
       const method = isEditing ? "PATCH" : "POST";
 
       const payload = isEditing

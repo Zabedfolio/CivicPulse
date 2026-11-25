@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
@@ -82,7 +84,7 @@ export function DuplicateComparisonModal({
 
     try {
       const res = await fetch(
-        `http://localhost:5000/api/v1/issues/${currentIssue._id}/mark-duplicate`,
+        `${API_BASE_URL}/issues/${currentIssue._id}/mark-duplicate`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

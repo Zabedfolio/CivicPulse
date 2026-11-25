@@ -8,10 +8,24 @@ const client = new MongoClient(uri, {
 });
 const db = client.db();
 
+const authSecret =
+  process.env.BETTER_AUTH_SECRET ||
+  (process.env.NODE_ENV !== "production" ? "dev-only-better-auth-secret-change-me" : undefined);
+
+const trustedOrigins = [
+  process.env.NEXT_PUBLIC_APP_URL,
+  process.env.BETTER_AUTH_URL,
+  "http://localhost:3000",
+].filter(Boolean);
+
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-  secret: process.env.BETTER_AUTH_SECRET || "VygaPVbomleYII9HLe3igs49157K6EcI",
+  secret: authSecret,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+  trustedOrigins,
+  advanced: {
+    useSecureCookies: process.env.NODE_ENV === "production",
+  },
   emailAndPassword: {
     enabled: true,
   },

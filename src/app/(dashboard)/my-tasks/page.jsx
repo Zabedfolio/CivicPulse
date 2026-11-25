@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "motion/react";
@@ -59,7 +61,7 @@ export default function FieldStaffTasksPage() {
     setError("");
 
     try {
-      const res = await fetch("http://localhost:5000/api/v1/tasks?limit=50", {
+      const res = await fetch(`${API_BASE_URL}/tasks?limit=50`, {
         credentials: "include",
       });
 
@@ -84,7 +86,7 @@ export default function FieldStaffTasksPage() {
   const handleStartWork = async (taskId) => {
     setStartingTaskId(taskId);
     try {
-      const res = await fetch(`http://localhost:5000/api/v1/tasks/${taskId}/status`, {
+      const res = await fetch(`${API_BASE_URL}/tasks/${taskId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

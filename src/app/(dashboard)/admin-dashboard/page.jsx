@@ -1,5 +1,7 @@
 "use client";
 
+
+import { API_BASE_URL } from "@/lib/api";
 import React, { useState, useEffect, useCallback } from "react";
 import { RoleGate } from "@/components/layout/RoleGate";
 import { useSession } from "@/lib/auth-client";
@@ -84,7 +86,7 @@ export default function AdminDashboardPage() {
   const fetchAllDepartments = useCallback(async () => {
     setIsDeptLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/departments/all", {
+      const res = await fetch(`${API_BASE_URL}/departments/all`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -93,7 +95,7 @@ export default function AdminDashboardPage() {
         setAllDepartments(depts);
         setDepartments(depts.filter((d) => d.status !== "inactive"));
       } else {
-        const pubRes = await fetch("http://localhost:5000/api/v1/departments", {
+        const pubRes = await fetch(`${API_BASE_URL}/departments`, {
           credentials: "include",
         });
         const pubJson = await pubRes.json();
@@ -110,7 +112,7 @@ export default function AdminDashboardPage() {
   // Fetch manager candidates
   const fetchManagerCandidates = useCallback(async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/v1/departments/managers/candidates", {
+      const res = await fetch(`${API_BASE_URL}/departments/managers/candidates`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -126,7 +128,7 @@ export default function AdminDashboardPage() {
   const fetchStaffMembers = useCallback(async () => {
     setIsStaffLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/api/v1/users/staff?limit=100", {
+      const res = await fetch(`${API_BASE_URL}/users/staff?limit=100`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -165,7 +167,7 @@ export default function AdminDashboardPage() {
       params.set("sortBy", sortBy || "createdAt");
       params.set("sortOrder", sortOrder || "desc");
 
-      const res = await fetch(`http://localhost:5000/api/v1/issues?${params.toString()}`, {
+      const res = await fetch(`${API_BASE_URL}/issues?${params.toString()}`, {
         credentials: "include",
       });
 
