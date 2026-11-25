@@ -160,7 +160,7 @@ export function AssignTaskModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -184,7 +184,7 @@ export function AssignTaskModal({
             damping: 32,
             mass: 0.9,
           }}
-          className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/90 dark:border-slate-800 shadow-2xl z-10 max-h-[92vh] flex flex-col overflow-hidden"
+          className="relative w-full max-w-2xl bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-[28px] border border-slate-200/90 dark:border-slate-800 shadow-2xl z-10 max-h-[92dvh] flex flex-col overflow-hidden"
         >
           {/* Header */}
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4 bg-teal-50/50 dark:bg-teal-950/20 shrink-0">

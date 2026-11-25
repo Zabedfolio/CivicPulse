@@ -98,7 +98,7 @@ export function FeedbackPromptModal({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 overflow-y-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -122,7 +122,7 @@ export function FeedbackPromptModal({
             damping: 32,
             mass: 0.9,
           }}
-          className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] border border-slate-200/90 dark:border-slate-800 shadow-2xl z-10 overflow-hidden"
+          className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-[28px] border border-slate-200/90 dark:border-slate-800 shadow-2xl z-10 max-h-[92dvh] overflow-y-auto"
         >
           {/* Header */}
           <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-start justify-between gap-4 bg-amber-50/40 dark:bg-amber-950/20">
