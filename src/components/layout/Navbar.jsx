@@ -30,6 +30,12 @@ export function Navbar() {
 
   const user = session?.user;
 
+  // Close mobile & profile menus on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setProfileMenuOpen(false);
+  }, [pathname]);
+
   // Click outside listener for ProfileMenu
   useEffect(() => {
     function handleClickOutside(event) {
@@ -213,100 +219,113 @@ export function Navbar() {
         </div>
 
         {/* Mobile Menu Toggle & Bell */}
-        <div className="flex md:hidden items-center gap-1.5">
+        <div className="flex md:hidden items-center gap-1">
           {user && <NotificationBell />}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-full text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 transition-colors cursor-pointer"
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu Backdrop & Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden mt-2 max-w-6xl mx-auto rounded-3xl p-5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 shadow-2xl space-y-3 pointer-events-auto animate-in fade-in duration-150">
-          <Link
-            href="/"
+        <>
+          <div
+            className="fixed inset-0 z-40 bg-slate-950/25 backdrop-blur-[1px] md:hidden pointer-events-auto"
             onClick={() => setMobileMenuOpen(false)}
-            className="block text-sm font-semibold text-slate-800 hover:text-[#0D9488] dark:text-slate-200"
-          >
-            Home
-          </Link>
-          <Link
-            href="/map"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-sm font-semibold text-slate-800 hover:text-[#0D9488] dark:text-slate-200"
-          >
-            City Map
-          </Link>
-          <Link
-            href="/about"
-            onClick={() => setMobileMenuOpen(false)}
-            className="block text-sm font-semibold text-slate-800 hover:text-[#0D9488] dark:text-slate-200"
-          >
-            About
-          </Link>
-          <div className="pt-2 flex flex-col gap-2">
-            {user ? (
-              <>
-                <Link
-                  href={getDashboardPath(user.role)}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-xs font-medium text-slate-700 dark:text-slate-300 py-1"
-                >
-                  Signed in as <span className="font-bold">{user.email}</span> ({user.role})
-                </Link>
-                <Link
-                  href="/my-reports"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-xs font-semibold text-slate-700 dark:text-slate-300 py-1"
-                >
-                  My Reports
-                </Link>
-                <Link
-                  href="/profile"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-xs font-semibold text-teal-600 dark:text-teal-400 py-1"
-                >
-                  Account Settings &amp; Profile
-                </Link>
-                <MagneticButton
-                  variant="outline"
-                  size="sm"
-                  className="w-full justify-center"
-                  onClick={handleSignOut}
-                >
-                  Sign Out
-                </MagneticButton>
-              </>
-            ) : (
-              <>
-                <MagneticButton
-                  variant="outline"
-                  size="sm"
-                  href="/login"
-                  className="w-full justify-center"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Sign In
-                </MagneticButton>
-                <MagneticButton
-                  variant="primary"
-                  size="sm"
-                  href="/issues/new"
-                  className="w-full justify-center font-bold"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  Report Issue
-                </MagneticButton>
-              </>
-            )}
+            aria-hidden="true"
+          />
+          <div className="relative z-50 md:hidden mt-2 max-w-6xl mx-auto rounded-3xl p-4 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-slate-800 shadow-2xl space-y-1 pointer-events-auto animate-in fade-in duration-150">
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#0D9488] dark:text-slate-200 dark:hover:bg-slate-800/70 transition-colors"
+            >
+              Home
+            </Link>
+            <Link
+              href="/map"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#0D9488] dark:text-slate-200 dark:hover:bg-slate-800/70 transition-colors"
+            >
+              City Map
+            </Link>
+            <Link
+              href="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="min-h-[44px] px-3 rounded-xl flex items-center text-sm font-semibold text-slate-800 hover:bg-slate-100 hover:text-[#0D9488] dark:text-slate-200 dark:hover:bg-slate-800/70 transition-colors"
+            >
+              About
+            </Link>
+            <div className="pt-2 mt-2 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-1.5">
+              {user ? (
+                <>
+                  <Link
+                    href={getDashboardPath(user.role)}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] px-3 rounded-xl flex items-center justify-between text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-colors"
+                  >
+                    <span className="truncate pr-2">
+                      Portal: <span className="font-bold">{user.email}</span>
+                    </span>
+                    <span className="text-[10px] uppercase font-bold px-2 py-0.5 rounded-full bg-teal-50 text-[#0D9488] dark:bg-teal-950 shrink-0">
+                      {user.role}
+                    </span>
+                  </Link>
+                  <Link
+                    href="/my-reports"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] px-3 rounded-xl flex items-center text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/70 transition-colors"
+                  >
+                    My Reports
+                  </Link>
+                  <Link
+                    href="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="min-h-[44px] px-3 rounded-xl flex items-center text-xs font-semibold text-teal-600 dark:text-teal-400 hover:bg-teal-50/70 dark:hover:bg-teal-950/40 transition-colors"
+                  >
+                    Account Settings &amp; Profile
+                  </Link>
+                  <MagneticButton
+                    variant="outline"
+                    size="sm"
+                    className="w-full justify-center min-h-[44px] mt-1"
+                    onClick={handleSignOut}
+                  >
+                    Sign Out
+                  </MagneticButton>
+                </>
+              ) : (
+                <>
+                  <MagneticButton
+                    variant="outline"
+                    size="sm"
+                    href="/login"
+                    className="w-full justify-center min-h-[44px]"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Sign In
+                  </MagneticButton>
+                  <MagneticButton
+                    variant="primary"
+                    size="sm"
+                    href="/issues/new"
+                    className="w-full justify-center font-bold min-h-[44px]"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Report Issue
+                  </MagneticButton>
+                </>
+              )}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </header>
   );

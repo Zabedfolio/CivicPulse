@@ -48,7 +48,7 @@ export function NotificationPopover({
               stiffness: 450,
               damping: 30,
             }}
-            className="absolute right-0 top-full mt-3 z-50 w-[360px] sm:w-[420px] max-w-[calc(100vw-2rem)] rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.18)] flex flex-col overflow-hidden"
+            className="fixed inset-x-3 top-20 sm:inset-x-auto sm:absolute sm:right-0 sm:top-full sm:mt-3 z-50 w-auto sm:w-[400px] sm:max-w-[calc(100vw-2rem)] rounded-3xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl border border-slate-200/90 dark:border-slate-800 shadow-[0_20px_50px_rgba(0,0,0,0.18)] flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800/80 flex items-center justify-between gap-3 bg-slate-50/60 dark:bg-slate-900/60">
@@ -111,7 +111,7 @@ export function NotificationPopover({
             </div>
 
             {/* Notifications List */}
-            <div className="max-h-[380px] overflow-y-auto p-2 space-y-1 divide-y divide-slate-100/60 dark:divide-slate-800/40">
+            <div className="max-h-[60dvh] sm:max-h-[380px] overflow-y-auto p-2 space-y-1 divide-y divide-slate-100/60 dark:divide-slate-800/40">
               {isLoading ? (
                 <div className="p-8 flex flex-col items-center justify-center text-muted gap-2">
                   <Loader2 className="size-6 animate-spin text-[#0D9488]" />

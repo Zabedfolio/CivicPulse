@@ -2271,7 +2271,7 @@ export const ProfileMenu = React.forwardRef(
         initial={still ? false : "hidden"}
         animate={inView || still ? "shown" : "hidden"}
         className={cn(
-          "w-[296px] max-w-full rounded-3xl bg-white p-2 text-[#242423] shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-16px_rgba(0,0,0,0.18)] transition-colors duration-500 dark:bg-zinc-900 dark:text-zinc-100 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_12px_32px_-16px_rgba(0,0,0,0.6)]",
+          "w-[296px] max-w-[calc(100vw-1.5rem)] rounded-3xl bg-white p-2 text-[#242423] shadow-[0_1px_2px_rgba(0,0,0,0.04),0_12px_32px_-16px_rgba(0,0,0,0.18)] transition-colors duration-500 dark:bg-zinc-900 dark:text-zinc-100 dark:shadow-[0_0_0_1px_rgba(255,255,255,0.06),0_12px_32px_-16px_rgba(0,0,0,0.6)]",
           // A `dark` class scopes the card's dark styles to the card itself.
           dark && "dark",
           className,
