@@ -2332,64 +2332,6 @@ export const ProfileMenu = React.forwardRef(
           </React.Fragment>
         ))}
 
-        {/* Theme */}
-        <motion.div
-          variants={ROW}
-          onPointerEnter={() => setHover(null)}
-          className="flex h-11 items-center gap-3 px-3 text-sm font-medium"
-        >
-          {/* The contrast icon turns over for dark. */}
-          <motion.span
-            className="grid size-[18px] place-items-center text-zinc-500 dark:text-zinc-400"
-            animate={{ rotate: theme === "dark" ? 180 : 0 }}
-            transition={
-              still ? { duration: 0 } : { duration: 0.6, ease: GLIDE }
-            }
-          >
-            <ContrastIcon className="size-[18px]" active={theme === "dark"} />
-          </motion.span>
-          <span className="flex-1">Appearance</span>
-          <div
-            role="radiogroup"
-            aria-label="Appearance"
-            className="flex rounded-full bg-[#242423]/[0.06] p-0.5 dark:bg-white/[0.08]"
-          >
-            {themes.map(({ value, name: label, Icon }) => {
-              const on = theme === value;
-              return (
-                <motion.button
-                  key={value}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  aria-label={label}
-                  onClick={() => {
-                    setTheme(value);
-                    onThemeChange?.(value);
-                  }}
-                  className={cn(
-                    "relative grid size-7 place-items-center rounded-full text-xs font-medium outline-none transition-colors",
-                    on
-                      ? "text-[#242423] dark:text-zinc-100"
-                      : "text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200"
-                  )}
-                >
-                  {on && (
-                    <motion.span
-                      layoutId={`${id}-theme`}
-                      className="absolute inset-0 rounded-full bg-white shadow-sm dark:bg-zinc-800"
-                      transition={still ? { duration: 0 } : PILL}
-                    />
-                  )}
-                  <Icon className="relative size-3.5" active={on} />
-                </motion.button>
-              );
-            })}
-          </div>
-        </motion.div>
-
-        {divider("d-signout")}
-
         {/* Sign Out */}
         {row(
           "signout",
