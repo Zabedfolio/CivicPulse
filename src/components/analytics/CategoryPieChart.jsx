@@ -82,7 +82,7 @@ export function CategoryPieChart({
           No categorized incidents recorded yet.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
           <div className="relative h-48 sm:h-56 w-full">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

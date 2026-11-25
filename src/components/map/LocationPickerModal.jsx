@@ -193,7 +193,7 @@ export function LocationPickerModal({
         </div>
 
         {/* Map Container */}
-        <div className="relative flex-1 min-h-[240px] sm:h-[400px] sm:flex-none bg-slate-100 dark:bg-slate-950">
+        <div className="relative flex-1 min-h-[240px] sm:h-[48dvh] sm:min-h-[280px] sm:max-h-[400px] sm:flex-none bg-slate-100 dark:bg-slate-950">
           <DynamicMapPicker
             latitude={currentLat}
             longitude={currentLng}

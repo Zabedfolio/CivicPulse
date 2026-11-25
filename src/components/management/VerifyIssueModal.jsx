@@ -234,7 +234,7 @@ export function VerifyIssueModal({
             />
 
             {/* Citizen Evidence & Description */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800">
               {/* Photo preview */}
               <div className="md:col-span-1">
                 {issue.image?.url ? (

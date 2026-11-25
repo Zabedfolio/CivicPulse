@@ -207,7 +207,7 @@ export function DuplicateComparisonModal({
             )}
 
             {/* Side-by-side comparison grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Card 1: Current Incoming Report */}
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between">
                 <div>

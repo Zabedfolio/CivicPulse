@@ -90,7 +90,7 @@ export function MonthlyTrendsChart({
         )}
       </div>
 
-      <div className="w-full h-60 sm:h-72">
+      <div className="w-full h-60 sm:h-64 md:h-72">
         {isLoading || !mounted ? (
           <div className="w-full h-full rounded-2xl bg-slate-100 dark:bg-slate-800/50 animate-pulse" />
         ) : trends.length === 0 ? (
