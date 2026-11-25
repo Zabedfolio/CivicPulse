@@ -72,8 +72,37 @@ export function PaginationControl({
         )}
       </div>
 
-      {/* Page switcher with spring indicator */}
-      <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-900/80 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner">
+      {/* Mobile Compact Prev / Page X of Y / Next (< 640px) */}
+      <div className="sm:hidden flex items-center justify-between w-full gap-2 bg-slate-50 dark:bg-slate-900/80 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-800">
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.max(1, currentPage - 1))}
+          disabled={currentPage <= 1}
+          className="min-h-[40px] px-3 rounded-xl inline-flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+          aria-label="Previous Page"
+        >
+          <ChevronLeft className="size-4" />
+          <span>Prev</span>
+        </button>
+
+        <span className="text-xs font-bold text-slate-700 dark:text-slate-200 tabular-nums">
+          Page <span className="text-[#0D9488]">{currentPage}</span> of {totalPages}
+        </span>
+
+        <button
+          type="button"
+          onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+          disabled={currentPage >= totalPages}
+          className="min-h-[40px] px-3 rounded-xl inline-flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 disabled:opacity-40 cursor-pointer disabled:cursor-not-allowed"
+          aria-label="Next Page"
+        >
+          <span>Next</span>
+          <ChevronRight className="size-4" />
+        </button>
+      </div>
+
+      {/* Tablet & Desktop Page switcher with spring indicator (>= 640px) */}
+      <div className="hidden sm:flex items-center gap-1 bg-slate-50 dark:bg-slate-900/80 p-1 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-inner">
         {/* Previous Button */}
         <button
           type="button"

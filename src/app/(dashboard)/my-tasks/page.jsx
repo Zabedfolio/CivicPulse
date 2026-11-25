@@ -367,25 +367,25 @@ export default function FieldStaffTasksPage() {
                   )}
 
                   {/* Action Buttons Toolbar */}
-                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
+                  <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <a
                       href={mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0D9488] hover:underline"
+                      className="min-h-[40px] sm:min-h-0 inline-flex items-center gap-1.5 text-xs font-bold text-[#0D9488] hover:underline"
                     >
                       <Navigation className="size-3.5" />
                       <span>Open Navigation GPS</span>
                     </a>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2">
                       {/* Start Work Action (if Pending) */}
                       {task.status === "Pending" && (
                         <button
                           type="button"
                           onClick={() => handleStartWork(task._id)}
                           disabled={startingTaskId === task._id}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 border border-amber-200 dark:border-amber-800 transition-colors cursor-pointer"
+                          className="min-h-[42px] sm:min-h-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl text-xs font-bold text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/60 hover:bg-amber-100 border border-amber-200 dark:border-amber-800 transition-colors cursor-pointer"
                         >
                           {startingTaskId === task._id ? (
                             <Loader2 className="size-3.5 animate-spin" />
@@ -401,7 +401,7 @@ export default function FieldStaffTasksPage() {
                         <button
                           type="button"
                           onClick={() => setActiveNoteTask(task)}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                          className="min-h-[42px] sm:min-h-0 inline-flex items-center justify-center gap-1.5 px-3 py-2 sm:py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
                         >
                           <FileText className="size-3.5" />
                           <span>Progress Note</span>
@@ -414,7 +414,7 @@ export default function FieldStaffTasksPage() {
                           variant="primary"
                           size="sm"
                           onClick={() => setActiveProofTask(task)}
-                          className="!bg-emerald-600 hover:!bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 px-3.5 py-1.5 shadow-sm"
+                          className="w-full sm:w-auto justify-center min-h-[42px] sm:min-h-0 !bg-emerald-600 hover:!bg-emerald-700 text-white text-xs font-bold flex items-center gap-1.5 px-3.5 py-2 sm:py-1.5 shadow-sm"
                         >
                           <Camera className="size-3.5" />
                           <span>Upload Proof &amp; Resolve</span>
