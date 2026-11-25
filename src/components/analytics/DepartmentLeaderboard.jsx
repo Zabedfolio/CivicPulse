@@ -38,7 +38,61 @@ export function DepartmentLeaderboard({ departments = [], isLoading = false }) {
           No department performance metrics available.
         </p>
       ) : (
-        <div className="overflow-x-auto">
+        <>
+          {/* Mobile Ranked Cards (< 640px) */}
+          <div className="sm:hidden space-y-3">
+            {departments.map((dept, index) => (
+              <div
+                key={dept._id}
+                className="p-3.5 rounded-2xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-100 dark:border-slate-800 space-y-2.5"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="size-6 rounded-lg bg-teal-50 dark:bg-teal-950/70 text-[#0D9488] font-mono text-[10px] font-extrabold flex items-center justify-center shrink-0">
+                      #{index + 1}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="font-bold text-xs text-slate-900 dark:text-white truncate">
+                        {dept.name}
+                      </div>
+                      <div className="text-[10px] text-muted font-mono">
+                        {dept.code} · {dept.staffCount} staff
+                      </div>
+                    </div>
+                  </div>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-mono text-[10px] font-extrabold shrink-0">
+                    <Star className="size-3 fill-amber-400 text-amber-400" aria-hidden="true" />
+                    {dept.citizenRating > 0 ? dept.citizenRating.toFixed(1) : "—"}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 h-2 rounded-full bg-slate-200/80 dark:bg-slate-700 overflow-hidden">
+                    <div
+                      className="h-full rounded-full bg-[#0D9488]"
+                      style={{ width: `${dept.resolutionRate}%` }}
+                    />
+                  </div>
+                  <span className="font-mono text-[11px] font-extrabold text-slate-900 dark:text-white">
+                    {dept.resolutionRate}%
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-muted">
+                  <span>
+                    Assigned: <strong className="text-slate-900 dark:text-white">{dept.totalAssigned}</strong> · Resolved:{" "}
+                    <strong className="text-emerald-600">{dept.resolved}</strong>
+                  </span>
+                  <span className="font-mono">
+                    {dept.avgResolutionHours > 0 ? `${dept.avgResolutionHours}h avg` : "—"}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tablet & Desktop Table (>= 640px) */}
+          <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 text-[10px] font-bold uppercase tracking-wider text-muted">
@@ -111,6 +165,7 @@ export function DepartmentLeaderboard({ departments = [], isLoading = false }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

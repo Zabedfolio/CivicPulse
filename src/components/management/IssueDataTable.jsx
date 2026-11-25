@@ -105,7 +105,100 @@ export function IssueDataTable({
         className
       )}
     >
-      <div className="overflow-x-auto">
+      {/* Mobile Card List (< 640px) */}
+      <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+        {issues.map((issue) => {
+          const ticketId = `CP-2026-${(issue._id || "").toString().slice(-4).toUpperCase()}`;
+          const priorityClass =
+            PRIORITY_BADGES[issue.priority?.toLowerCase()] || PRIORITY_BADGES.medium;
+          const formattedDate = issue.createdAt
+            ? new Date(issue.createdAt).toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+                year: "numeric",
+              })
+            : "Recent";
+
+          return (
+            <div key={issue._id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="font-mono text-[11px] font-extrabold text-[#0D9488]">
+                      #{ticketId}
+                    </span>
+                    <span
+                      className={cn(
+                        "inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border",
+                        priorityClass
+                      )}
+                    >
+                      {issue.priority || "medium"}
+                    </span>
+                  </div>
+                  <Link
+                    href={`/issues/${issue._id}`}
+                    className="block mt-1 font-extrabold text-sm text-slate-900 dark:text-white hover:text-[#0D9488] line-clamp-2"
+                  >
+                    {issue.title}
+                  </Link>
+                </div>
+                <div className="shrink-0">
+                  <StatusBadge status={issue.status} size="sm" />
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-muted">
+                <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold">
+                  {issue.category}
+                </span>
+                <span className="inline-flex items-center gap-1">
+                  <Calendar className="size-3" />
+                  {formattedDate}
+                </span>
+                <span className="inline-flex items-center gap-1 truncate max-w-full">
+                  <MapPin className="size-3 shrink-0" />
+                  <span className="truncate">{issue.address || "Chattogram"}</span>
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                {!issue.isDuplicate && issue.status !== "Closed" && (
+                  <button
+                    type="button"
+                    onClick={() => setAssigningIssue(issue)}
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 cursor-pointer"
+                  >
+                    <Wrench className="size-3.5 text-teal-600" />
+                    <span>Assign</span>
+                  </button>
+                )}
+                {onInspect ? (
+                  <button
+                    type="button"
+                    onClick={() => onInspect(issue)}
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#0D9488] bg-teal-50 dark:bg-teal-950/80 border border-teal-200/80 dark:border-teal-800/80 cursor-pointer"
+                  >
+                    <span>Triage</span>
+                    <ArrowRight className="size-3.5" />
+                  </button>
+                ) : (
+                  <Link
+                    href={`/issues/${issue._id}`}
+                    className="flex-1 min-h-[40px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#0D9488] bg-teal-50 dark:bg-teal-950/80 border border-teal-200/80 dark:border-teal-800/80"
+                  >
+                    <span>Triage</span>
+                    <ArrowRight className="size-3.5" />
+                  </Link>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Tablet & Desktop Data Table (>= 640px) */}
+      <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-left text-xs border-collapse">
           {/* Table Header */}
           <thead className="bg-slate-50/80 dark:bg-slate-800/40 border-b border-slate-200/80 dark:border-slate-800 text-[11px] font-bold text-muted uppercase tracking-wider select-none">

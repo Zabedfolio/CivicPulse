@@ -223,9 +223,120 @@ export function AllUsersDirectory({ departments = [] }) {
         </div>
       )}
 
-      {/* Users Table */}
+      {/* Users Mobile Cards (< 640px) + Desktop Table (>= 640px) */}
       <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Card List */}
+        <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+          {isLoading ? (
+            <div className="p-4 space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-24 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />
+              ))}
+            </div>
+          ) : users.length === 0 ? (
+            <div className="py-12 text-center text-xs text-muted px-4">
+              No users match the selected filters.
+            </div>
+          ) : (
+            users.map((u) => {
+              const isSelf = currentUserId && u._id === currentUserId;
+              const isBusy = updatingId === u._id;
+              const initials = (u.name || "U")
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .slice(0, 2)
+                .toUpperCase();
+
+              return (
+                <div key={u._id} className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="size-9 rounded-xl bg-teal-50 dark:bg-teal-950/70 border border-teal-200/70 dark:border-teal-800/70 text-[#0D9488] font-extrabold text-xs flex items-center justify-center shrink-0">
+                        {initials}
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-1.5 font-extrabold text-sm text-slate-900 dark:text-white">
+                          <span className="truncate">{u.name}</span>
+                          {isSelf && (
+                            <span className="px-1.5 py-0.5 rounded bg-teal-100 dark:bg-teal-900 text-[#0D9488] text-[9px] font-bold">
+                              YOU
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] text-muted truncate">{u.email}</div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={u.isActive !== false}
+                      aria-label={`Toggle active status for ${u.name}`}
+                      disabled={isSelf || isBusy}
+                      onClick={() =>
+                        handleUpdateUser(u._id, { isActive: u.isActive === false })
+                      }
+                      className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-extrabold cursor-pointer disabled:opacity-50 ${
+                        u.isActive !== false
+                          ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                          : "bg-slate-100 dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700"
+                      }`}
+                    >
+                      <span
+                        className={`size-2 rounded-full ${
+                          u.isActive !== false ? "bg-emerald-500" : "bg-slate-400"
+                        }`}
+                      />
+                      <span>{u.isActive !== false ? "Active" : "Inactive"}</span>
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <select
+                      aria-label={`Change role for ${u.name}`}
+                      disabled={isSelf || isBusy}
+                      value={u.role}
+                      onChange={(e) => handleUpdateUser(u._id, { role: e.target.value })}
+                      className={`min-h-[38px] px-2.5 py-1 rounded-xl border text-[11px] font-extrabold uppercase cursor-pointer disabled:opacity-60 ${
+                        ROLE_STYLE[u.role] || ROLE_STYLE.citizen
+                      }`}
+                    >
+                      <option value="citizen">Citizen</option>
+                      <option value="staff">Staff</option>
+                      <option value="manager">Manager</option>
+                      <option value="admin">Admin</option>
+                    </select>
+
+                    {(u.role === "staff" || u.role === "manager") && (
+                      <select
+                        aria-label={`Assign department for ${u.name}`}
+                        disabled={isBusy}
+                        value={u.department?._id || u.department || ""}
+                        onChange={(e) =>
+                          handleUpdateUser(u._id, {
+                            department: e.target.value || null,
+                          })
+                        }
+                        className="min-h-[38px] px-2.5 py-1 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200"
+                      >
+                        <option value="">Unassigned</option>
+                        {departments.map((d) => (
+                          <option key={d._id} value={d._id}>
+                            {d.code}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
+
+        {/* Tablet & Desktop Table (>= 640px) */}
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-800/40 text-[10px] font-bold uppercase tracking-wider text-muted">

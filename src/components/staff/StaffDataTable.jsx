@@ -55,7 +55,69 @@ export function StaffDataTable({
 
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs">
-      <div className="overflow-x-auto">
+      {/* Mobile Card List (< 640px) */}
+      <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+        {staff.map((member) => {
+          const isActive = member.isActive !== false;
+          const dept = member.department;
+          const activeCount = member.activeTasks || 0;
+
+          return (
+            <div key={member._id} className="p-4 space-y-3">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="size-9 rounded-2xl bg-teal-100 dark:bg-teal-900/60 text-teal-800 dark:text-teal-200 flex items-center justify-center font-bold text-xs shrink-0 overflow-hidden">
+                    {member.image ? (
+                      <img src={member.image} alt={member.name} className="size-full object-cover" />
+                    ) : (
+                      member.name?.charAt(0) || <User className="size-4" />
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <div className="font-extrabold text-sm text-slate-900 dark:text-white truncate">
+                      {member.name}
+                    </div>
+                    <div className="text-[11px] text-muted truncate">{member.email}</div>
+                  </div>
+                </div>
+                <span
+                  className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase border ${
+                    isActive
+                      ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
+                      : "bg-rose-50 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300 border-rose-200 dark:border-rose-800"
+                  }`}
+                >
+                  {isActive ? "Active" : "Suspended"}
+                </span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                {dept && (
+                  <span className="font-mono text-[10px] font-black px-2 py-0.5 rounded-lg bg-teal-50 dark:bg-teal-950 text-[#0D9488] border border-teal-200 dark:border-teal-800">
+                    {dept.code}
+                  </span>
+                )}
+                <StaffWorkloadBadge activeTasks={activeCount} />
+                <span className="text-[10px] font-mono font-bold text-muted">
+                  ({activeCount} active / {member.completedTasks || 0} done)
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onEdit(member)}
+                className="w-full min-h-[40px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-teal-50 hover:text-[#0D9488] transition-colors cursor-pointer"
+              >
+                <Edit2 className="size-3.5" />
+                <span>Edit Technician</span>
+              </button>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Tablet & Desktop Table (>= 640px) */}
+      <div className="hidden sm:block overflow-x-auto">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/75 dark:bg-slate-800/40 text-[11px] font-black uppercase text-muted tracking-wider">
