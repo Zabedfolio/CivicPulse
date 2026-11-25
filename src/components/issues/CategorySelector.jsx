@@ -77,7 +77,7 @@ export function CategorySelector({ selected, onSelect, error }) {
         <span className="text-[11px] text-muted font-medium">Automatic Municipal Routing</span>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3">
         {CATEGORIES.map((cat) => {
           const Icon = cat.icon;
           const isSelected = selected === cat.id;

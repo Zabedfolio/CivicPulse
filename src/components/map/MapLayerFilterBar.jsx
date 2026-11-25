@@ -278,7 +278,7 @@ export function MapLayerFilterBar({
 
           {/* Right Action: Visible Counter + Recenter + Report Action */}
           <div className="flex items-center gap-2 shrink-0">
-            <div className="hidden md:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 dark:bg-teal-950 text-[#0D9488] border border-teal-200 dark:border-teal-800">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-teal-50 dark:bg-teal-950 text-[#0D9488] border border-teal-200 dark:border-teal-800 whitespace-nowrap">
               <span className="size-2 rounded-full bg-[#0D9488] animate-pulse" />
               <span>{visibleCount} Pins</span>
             </div>
@@ -305,8 +305,8 @@ export function MapLayerFilterBar({
           </div>
         </div>
 
-        {/* Category Pills Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-0.5">
+        {/* Category Pills Bar (wraps cleanly on tablets, single row on desktop) */}
+        <div className="flex flex-wrap lg:flex-nowrap items-center gap-1.5 py-0.5">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (

@@ -240,9 +240,9 @@ export default function IssueDetailPage() {
         </div>
 
         {/* Two-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8 items-start">
           {/* Left Column: Media, Description & Geocoding Details (7 Cols) */}
-          <div className="lg:col-span-7 space-y-6">
+          <div className="md:col-span-7 space-y-6">
             {/* Photo Evidence Card */}
             <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between mb-3 text-xs font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider">
@@ -334,7 +334,7 @@ export default function IssueDetailPage() {
           </div>
 
           {/* Right Column: Status Lifecycle Timeline & Feedback (5 Cols) */}
-          <div className="lg:col-span-5 space-y-6">
+          <div className="md:col-span-5 space-y-6">
             {/* Citizen Resolution Review Section */}
             {feedback ? (
               <FeedbackCard feedback={feedback} />
