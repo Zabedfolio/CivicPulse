@@ -201,10 +201,11 @@ export function QuickActionWidget() {
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full h-12 text-sm sm:text-base font-bold shadow-md shadow-teal-500/20"
+              className="w-full h-12 px-4 text-xs sm:text-base font-bold whitespace-nowrap shadow-md shadow-teal-500/20"
             >
-              Continue to Attach Photo Evidence
-              <ArrowRight className="w-4 h-4 ml-1.5" />
+              <span className="sm:hidden">Attach Photo Evidence</span>
+              <span className="hidden sm:inline">Continue to Attach Photo Evidence</span>
+              <ArrowRight className="w-4 h-4 ml-1.5 shrink-0" />
             </Button>
           </motion.form>
         ) : (

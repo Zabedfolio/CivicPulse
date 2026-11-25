@@ -171,10 +171,11 @@ export default function HomePage() {
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-teal-50 border border-teal-200 text-[#0D9488] shadow-xs dark:bg-teal-950/60 dark:border-teal-800 mb-6"
+          className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold whitespace-nowrap bg-teal-50 border border-teal-200 text-[#0D9488] shadow-xs dark:bg-teal-950/60 dark:border-teal-800 mb-6"
         >
-          <span className="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse" />
-          <span>GovTech Smart City Platform · Active Municipal Dispatch</span>
+          <span className="w-2 h-2 rounded-full bg-[#0D9488] animate-pulse shrink-0" />
+          <span className="sm:hidden">GovTech · Active Municipal Dispatch</span>
+          <span className="hidden sm:inline">GovTech Smart City Platform · Active Municipal Dispatch</span>
         </motion.div>
 
         {/* BlurText Main Headline */}

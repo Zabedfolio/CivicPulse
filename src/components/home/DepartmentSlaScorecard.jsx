@@ -91,19 +91,68 @@ export function DepartmentSlaScorecard() {
       </div>
 
       <div className="rounded-3xl bg-white dark:bg-slate-900 border border-border dark:border-slate-800 shadow-lg overflow-hidden">
-        <div className="p-4 sm:px-6 sm:py-3.5 bg-slate-50/75 dark:bg-slate-800/40 border-b border-border flex items-center justify-between text-xs">
-          <span className="font-bold text-slate-700 dark:text-slate-300">
-            Chattogram Municipal SLA Benchmark Matrix
+        <div className="p-4 sm:px-6 sm:py-3.5 bg-slate-50/75 dark:bg-slate-800/40 border-b border-border flex items-center justify-between gap-3 text-xs">
+          <span className="font-bold text-slate-700 dark:text-slate-300 truncate">
+            Chattogram Municipal SLA Matrix
           </span>
           {isLive && (
-            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-              <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-              Live City GIS Feed
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-bold whitespace-nowrap shrink-0 text-emerald-600 dark:text-emerald-400">
+              <span className="size-2 rounded-full bg-emerald-500 animate-pulse shrink-0" />
+              <span className="sm:hidden">Live GIS Feed</span>
+              <span className="hidden sm:inline">Live City GIS Feed</span>
             </span>
           )}
         </div>
 
-        <div className="overflow-x-auto">
+        {/* Mobile Scorecard List (< 640px) */}
+        <div className="sm:hidden divide-y divide-border">
+          {metrics.map((dept) => (
+            <div key={dept.name} className="p-4 space-y-2.5">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 min-w-0">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ backgroundColor: dept.color || "#0D9488" }}
+                  />
+                  <span className="font-bold text-sm text-slate-900 dark:text-white truncate">
+                    {dept.name}
+                  </span>
+                </div>
+                {dept.code && (
+                  <span className="font-mono text-[10px] font-bold text-muted uppercase shrink-0">
+                    {dept.code}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <div className="flex-1 h-2 rounded-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-[#0D9488]"
+                    style={{ width: `${Math.min(100, dept.slaRate)}%` }}
+                  />
+                </div>
+                <span className="text-xs font-extrabold text-[#0D9488] font-mono whitespace-nowrap">
+                  {dept.slaRate}% SLA
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between text-[11px] text-muted">
+                <span className="inline-flex items-center gap-1 font-mono font-semibold">
+                  <Clock className="w-3 h-3" />
+                  {dept.avgHours} avg
+                </span>
+                <span>{dept.activeStaff} Crews</span>
+                <span className="inline-flex items-center gap-1 text-amber-500 font-bold">
+                  <Star className="w-3 h-3 fill-amber-400" />
+                  {dept.satisfaction}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 dark:bg-slate-800/60 text-xs uppercase font-bold text-slate-500 dark:text-slate-400 border-b border-border">
               <tr>

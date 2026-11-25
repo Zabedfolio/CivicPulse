@@ -139,15 +139,17 @@ export function BeforeAfterSlider() {
               priority
             />
             {/* Dark gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/60 flex flex-col justify-between p-6 sm:p-8 text-white">
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/80 text-white border border-emerald-400/50 backdrop-blur-md shadow-md">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  AFTER (VERIFIED REPAIRED)
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/60 flex flex-col justify-between p-3.5 sm:p-8 text-white">
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold whitespace-nowrap bg-emerald-500/85 text-white border border-emerald-400/50 backdrop-blur-md shadow-md">
+                  <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                  <span className="sm:hidden">AFTER · VERIFIED</span>
+                  <span className="hidden sm:inline">AFTER (VERIFIED REPAIRED)</span>
                 </span>
-                <div className="flex items-center gap-1 text-xs font-bold text-amber-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 shadow-md">
-                  <Star className="w-3.5 h-3.5 fill-amber-300" />
-                  {current.rating} Citizen Rating
+                <div className="inline-flex items-center gap-1 text-[10px] sm:text-xs font-bold whitespace-nowrap text-amber-300 bg-black/65 backdrop-blur-md px-2.5 py-1 rounded-full border border-white/20 shadow-md shrink-0">
+                  <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-300 shrink-0" />
+                  <span className="sm:hidden">{current.rating} Rating</span>
+                  <span className="hidden sm:inline">{current.rating} Citizen Rating</span>
                 </div>
               </div>
 
@@ -176,11 +178,12 @@ export function BeforeAfterSlider() {
               priority
             />
             {/* Dark gradient overlay for text readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/60 flex flex-col justify-between p-6 sm:p-8 text-white">
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-600/85 text-white border border-red-400/50 backdrop-blur-md shadow-md">
-                  <AlertTriangle className="w-3.5 h-3.5" />
-                  BEFORE (CITIZEN REPORT)
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/60 flex flex-col justify-between p-3.5 sm:p-8 text-white">
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold whitespace-nowrap bg-red-600/85 text-white border border-red-400/50 backdrop-blur-md shadow-md">
+                  <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 shrink-0" />
+                  <span className="sm:hidden">BEFORE · REPORT</span>
+                  <span className="hidden sm:inline">BEFORE (CITIZEN REPORT)</span>
                 </span>
               </div>
 
