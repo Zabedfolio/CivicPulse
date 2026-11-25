@@ -13,6 +13,7 @@ import { DepartmentModal } from "@/components/departments/DepartmentModal";
 import { StaffDataTable } from "@/components/staff/StaffDataTable";
 import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
 import { DepartmentAnalyticsView } from "@/components/analytics/DepartmentAnalyticsView";
+import { CityAnalyticsView } from "@/components/analytics/CityAnalyticsView";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   ShieldCheck,
@@ -342,7 +343,7 @@ export default function AdminDashboardPage() {
             }`}
           >
             <Award className="size-3.5 text-amber-500" />
-            <span>SLA Benchmarks</span>
+            <span>Executive Analytics</span>
           </button>
         </div>
 
@@ -563,42 +564,46 @@ export default function AdminDashboardPage() {
           </div>
         )}
 
-        {/* TAB 4: SLA BENCHMARKS & DEPARTMENT ANALYTICS */}
+        {/* TAB 4: EXECUTIVE ANALYTICS & SLA BENCHMARKS */}
         {activeTab === "analytics" && (
-          <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
-              <div>
-                <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
-                  Municipal SLA Audit &amp; Performance Scorecard
-                </h2>
-                <p className="text-xs text-muted">
-                  Audit turnaround compliance against statutory priority targets and monitor verified citizen feedback.
-                </p>
+          <div className="space-y-8">
+            <CityAnalyticsView departments={allDepartments} />
+
+            <div className="space-y-6 pt-4 border-t border-slate-200/80 dark:border-slate-800">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 shadow-xs">
+                <div>
+                  <h2 className="text-lg font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Departmental SLA Audit &amp; Priority Matrix
+                  </h2>
+                  <p className="text-xs text-muted">
+                    Drill down into individual division turnaround targets and verified citizen reviews.
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                    Select Department:
+                  </span>
+                  <select
+                    value={selectedAnalyticsDept || (allDepartments[0]?._id || "")}
+                    onChange={(e) => setSelectedAnalyticsDept(e.target.value)}
+                    className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:border-teal-500"
+                  >
+                    {allDepartments.map((dept) => (
+                      <option key={dept._id} value={dept._id}>
+                        {dept.code} - {dept.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                  Select Department:
-                </span>
-                <select
-                  value={selectedAnalyticsDept || (allDepartments[0]?._id || "")}
-                  onChange={(e) => setSelectedAnalyticsDept(e.target.value)}
-                  className="px-3.5 py-1.5 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:border-teal-500"
-                >
-                  {allDepartments.map((dept) => (
-                    <option key={dept._id} value={dept._id}>
-                      {dept.code} - {dept.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {allDepartments.length > 0 && (
+                <DepartmentAnalyticsView
+                  departmentId={selectedAnalyticsDept || allDepartments[0]?._id}
+                />
+              )}
             </div>
-
-            {allDepartments.length > 0 && (
-              <DepartmentAnalyticsView
-                departmentId={selectedAnalyticsDept || allDepartments[0]?._id}
-              />
-            )}
           </div>
         )}
 

@@ -11,6 +11,7 @@ import { VerifyIssueModal } from "@/components/management/VerifyIssueModal";
 import { StaffDataTable } from "@/components/staff/StaffDataTable";
 import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
 import { DepartmentAnalyticsView } from "@/components/analytics/DepartmentAnalyticsView";
+import { CityAnalyticsView } from "@/components/analytics/CityAnalyticsView";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   Building2,
@@ -411,11 +412,19 @@ export default function DepartmentDashboardPage() {
 
         {/* TAB 3: ANALYTICS & SLA SCORECARD */}
         {activeTab === "analytics" && (
-          <div className="space-y-6">
-            <DepartmentAnalyticsView
-              departmentId={user?.department?._id || user?.department}
-              departmentName={user?.department?.name || "Department"}
+          <div className="space-y-8">
+            <CityAnalyticsView
+              lockedDepartmentId={user?.department?._id || user?.department}
+              title={`${user?.department?.name || "Department"} Analytics & Velocity`}
+              subtitle="Division-scoped monthly incident trends, category distribution, and lifecycle breakdown."
             />
+
+            <div className="pt-4 border-t border-slate-200/80 dark:border-slate-800">
+              <DepartmentAnalyticsView
+                departmentId={user?.department?._id || user?.department}
+                departmentName={user?.department?.name || "Department"}
+              />
+            </div>
           </div>
         )}
 
