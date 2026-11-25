@@ -14,6 +14,7 @@ import { StaffDataTable } from "@/components/staff/StaffDataTable";
 import { StaffMemberModal } from "@/components/staff/StaffMemberModal";
 import { DepartmentAnalyticsView } from "@/components/analytics/DepartmentAnalyticsView";
 import { CityAnalyticsView } from "@/components/analytics/CityAnalyticsView";
+import { ActivityLogList } from "@/components/admin/ActivityLogList";
 import { MagneticButton } from "@/components/ui/MagneticButton";
 import {
   ShieldCheck,
@@ -31,6 +32,7 @@ import {
   UserPlus,
   Briefcase,
   Award,
+  ScrollText,
 } from "lucide-react";
 
 export default function AdminDashboardPage() {
@@ -345,6 +347,19 @@ export default function AdminDashboardPage() {
             <Award className="size-3.5 text-amber-500" />
             <span>Executive Analytics</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("activity")}
+            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap ${
+              activeTab === "activity"
+                ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-xs"
+                : "text-muted hover:text-slate-900 dark:hover:text-white"
+            }`}
+          >
+            <ScrollText className="size-3.5 text-purple-600" />
+            <span>Activity Log</span>
+          </button>
         </div>
 
         {/* TAB 1: INCIDENT TRIAGE & AUDIT */}
@@ -606,6 +621,9 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
+
+        {/* TAB 5: SYSTEM-WIDE ACTIVITY LOG STREAM */}
+        {activeTab === "activity" && <ActivityLogList />}
 
         {/* Triage Decision Modal */}
         <VerifyIssueModal
