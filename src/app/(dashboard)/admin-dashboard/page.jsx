@@ -288,8 +288,28 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Global Navigation Tabs (Triage vs Departments vs Staff) */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit border border-slate-200/80 dark:border-slate-700/80 overflow-x-auto">
+        {/* Mobile Section Switcher (< 640px) */}
+        <div className="sm:hidden">
+          <label htmlFor="admin-mobile-tab" className="sr-only">
+            Switch Admin Dashboard Section
+          </label>
+          <select
+            id="admin-mobile-tab"
+            value={activeTab}
+            onChange={(e) => setActiveTab(e.target.value)}
+            className="w-full min-h-[44px] px-3.5 py-2 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/90 text-xs font-extrabold text-slate-900 dark:text-white focus:outline-none focus:border-[#0D9488]"
+          >
+            <option value="triage">Incident Triage &amp; Audit ({totalItems})</option>
+            <option value="departments">Municipal Departments ({allDepartments.length})</option>
+            <option value="staff">Staff &amp; Workforce ({staffList.length})</option>
+            <option value="analytics">Executive Analytics</option>
+            <option value="activity">Activity Log</option>
+            <option value="users">All Users</option>
+          </select>
+        </div>
+
+        {/* Tablet & Desktop Navigation Tabs (>= 640px) */}
+        <div className="hidden sm:flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit border border-slate-200/80 dark:border-slate-700/80">
           <button
             type="button"
             onClick={() => setActiveTab("triage")}

@@ -64,8 +64,37 @@ export function IssueFilterBar({
 
   return (
     <div className={cn("space-y-3.5", className)}>
-      {/* Primary Row: Status Pills & Action */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Mobile Compact 2-Col Select Grid (< 640px) */}
+      <div className="sm:hidden grid grid-cols-2 gap-2 text-xs">
+        <select
+          aria-label="Filter by Status"
+          value={selectedStatus}
+          onChange={(e) => onStatusChange(e.target.value)}
+          className="min-h-[40px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-teal-500"
+        >
+          {STATUSES.map((st) => (
+            <option key={st.id} value={st.id}>
+              {st.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          aria-label="Filter by Priority"
+          value={selectedPriority}
+          onChange={(e) => onPriorityChange(e.target.value)}
+          className="min-h-[40px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-2.5 py-1.5 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-teal-500"
+        >
+          {PRIORITIES.map((p) => (
+            <option key={p.id} value={p.id}>
+              {p.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Primary Row: Status Pills & Action (>= 640px) */}
+      <div className="hidden sm:flex flex-wrap items-center justify-between gap-3">
         {/* Status Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
           {STATUSES.map((st) => {
@@ -101,10 +130,10 @@ export function IssueFilterBar({
         )}
       </div>
 
-      {/* Secondary Row: Priority Pills, Category Dropdown, Department Dropdown, Sort */}
-      <div className="flex flex-wrap items-center gap-2.5 pt-1 text-xs">
-        {/* Priority Filter */}
-        <div className="flex items-center gap-1 bg-slate-50 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800">
+      {/* Secondary Row: Priority Pills (>=640px), Category Dropdown, Department Dropdown, Sort */}
+      <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2 sm:gap-2.5 pt-1 text-xs">
+        {/* Priority Filter (>= 640px) */}
+        <div className="hidden sm:flex items-center gap-1 bg-slate-50 dark:bg-slate-900/60 p-1 rounded-xl border border-slate-200/80 dark:border-slate-800">
           <span className="text-[10px] font-bold uppercase text-slate-400 px-1.5">Priority:</span>
           {PRIORITIES.map((p) => {
             const isActive = selectedPriority === p.id;
@@ -130,9 +159,10 @@ export function IssueFilterBar({
         {/* Category Dropdown */}
         <div className="flex items-center gap-1.5">
           <select
+            aria-label="Filter by Category"
             value={selectedCategory}
             onChange={(e) => onCategoryChange(e.target.value)}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-teal-500 cursor-pointer shadow-xs"
+            className="w-full sm:w-auto min-h-[40px] sm:min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-teal-500 cursor-pointer shadow-xs"
           >
             {CATEGORIES.map((c) => (
               <option key={c} value={c}>
@@ -146,9 +176,10 @@ export function IssueFilterBar({
         {showDepartmentFilter && (
           <div className="flex items-center gap-1.5">
             <select
+              aria-label="Filter by Department"
               value={selectedDepartment}
               onChange={(e) => onDepartmentChange(e.target.value)}
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-teal-500 cursor-pointer shadow-xs"
+              className="w-full sm:w-auto min-h-[40px] sm:min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 focus:outline-none focus:border-teal-500 cursor-pointer shadow-xs"
             >
               <option value="all">All Departments</option>
               {departments.map((d) => (
@@ -161,12 +192,13 @@ export function IssueFilterBar({
         )}
 
         {/* Sort Selector */}
-        <div className="flex items-center gap-1.5 ml-auto">
-          <span className="text-[11px] text-slate-400">Sort:</span>
+        <div className="col-span-2 sm:col-span-1 flex items-center gap-1.5 sm:ml-auto">
+          <span className="text-[11px] text-slate-400 shrink-0">Sort:</span>
           <select
+            aria-label="Sort issues"
             value={sortOption}
             onChange={(e) => onSortChange(e.target.value)}
-            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-teal-500 cursor-pointer shadow-xs"
+            className="flex-1 sm:flex-none min-h-[40px] sm:min-h-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl px-3 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-200 focus:outline-none focus:border-teal-500 cursor-pointer shadow-xs"
           >
             {SORT_OPTIONS.map((opt) => (
               <option key={opt.id} value={opt.id}>

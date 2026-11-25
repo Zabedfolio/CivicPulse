@@ -217,8 +217,8 @@ export default function DepartmentDashboardPage() {
           </div>
         </div>
 
-        {/* Global Navigation Tabs (Triage vs Technicians) */}
-        <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-fit border border-slate-200/80 dark:border-slate-700/80">
+        {/* Global Navigation Tabs (Triage vs Technicians vs Analytics) */}
+        <div className="grid grid-cols-1 sm:flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-800/80 w-full sm:w-fit border border-slate-200/80 dark:border-slate-700/80">
           <button
             type="button"
             onClick={() => setActiveTab("triage")}

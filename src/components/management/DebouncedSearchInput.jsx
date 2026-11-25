@@ -39,7 +39,7 @@ export function DebouncedSearchInput({
   };
 
   return (
-    <div className={cn("relative w-full max-w-sm", className)}>
+    <div className={cn("relative w-full sm:max-w-sm", className)}>
       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
         <Search className="size-4" />
       </div>

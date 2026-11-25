@@ -335,7 +335,7 @@ export function ActivityLogList() {
                             className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200/70 dark:border-slate-800 text-[10px] text-slate-600 dark:text-slate-300"
                           >
                             <span className="font-bold text-muted">{key}:</span>
-                            <span className="font-mono font-semibold truncate max-w-[220px]">
+                            <span className="font-mono font-semibold truncate max-w-[160px] sm:max-w-[220px]">
                               {typeof val === "object" ? JSON.stringify(val) : String(val)}
                             </span>
                           </span>
