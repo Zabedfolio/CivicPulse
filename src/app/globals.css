@@ -78,6 +78,15 @@ body {
   top: 84px !important;
 }
 
+/* Hide horizontal scrollbars on pill bars */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* Official A4 PDF Print Formatting */
 @media print {
   @page {

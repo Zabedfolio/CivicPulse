@@ -105,15 +105,18 @@ export function CityIssueMap({
     markersLayerRef.current = markersLayer;
 
     return () => {
-      // Clean up popup React roots
-      popupRootsRef.current.forEach((root) => {
-        try {
-          root.unmount();
-        } catch (e) {
-          // ignore unmount errors on teardown
-        }
-      });
+      // Clean up popup React roots asynchronously to avoid synchronous unmount warnings
+      const rootsToUnmount = popupRootsRef.current;
       popupRootsRef.current = [];
+      setTimeout(() => {
+        rootsToUnmount.forEach((root) => {
+          try {
+            root.unmount();
+          } catch (e) {
+            // ignore unmount errors on teardown
+          }
+        });
+      }, 0);
 
       if (mapRef.current) {
         mapRef.current.remove();
@@ -136,15 +139,18 @@ export function CityIssueMap({
   useEffect(() => {
     if (!markersLayerRef.current) return;
 
-    // Clean up previous popup roots
-    popupRootsRef.current.forEach((root) => {
-      try {
-        root.unmount();
-      } catch (e) {
-        // ignore
-      }
-    });
+    // Clean up previous popup roots asynchronously to avoid React render race warnings
+    const prevRoots = popupRootsRef.current;
     popupRootsRef.current = [];
+    setTimeout(() => {
+      prevRoots.forEach((root) => {
+        try {
+          root.unmount();
+        } catch (e) {
+          // ignore
+        }
+      });
+    }, 0);
 
     // Clear previous markers
     markersLayerRef.current.clearLayers();

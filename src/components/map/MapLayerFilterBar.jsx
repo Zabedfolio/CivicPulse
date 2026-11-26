@@ -74,7 +74,7 @@ export function MapLayerFilterBar({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="absolute bottom-3 sm:bottom-6 left-0 right-0 mx-auto z-[1000] w-[calc(100%-1rem)] sm:w-[95%] max-w-4xl pointer-events-auto"
+      className="absolute bottom-3 sm:bottom-6 left-0 right-0 mx-auto z-[1000] w-[calc(100%-1rem)] sm:w-[95%] max-w-5xl pointer-events-auto"
     >
       {/* MOBILE COMPACT DOCK (< 640px): Drop-Up Status + Drop-Up Category + Recenter + '+' Button */}
       <div className="sm:hidden relative p-2 rounded-2xl bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 shadow-2xl flex items-center gap-1.5">
@@ -245,7 +245,7 @@ export function MapLayerFilterBar({
               <div className="size-6 rounded-lg bg-teal-50 dark:bg-teal-950 text-[#0D9488] flex items-center justify-center font-bold">
                 <MapPin className="size-3.5" />
               </div>
-              <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight hidden sm:inline">
+              <span className="text-xs font-black text-slate-900 dark:text-white uppercase tracking-tight hidden lg:inline">
                 Chattogram GIS
               </span>
               <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">

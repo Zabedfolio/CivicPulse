@@ -1,6 +1,8 @@
 import { betterAuth } from "better-auth";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
 import { MongoClient } from "mongodb";
+import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const uri = process.env.MONGO_URI || "mongodb://localhost:27017/civicpulse";
 const client = new MongoClient(uri, {
@@ -24,6 +26,29 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    password: {
+      hash: async (password) => {
+        return await bcrypt.hash(password, 10);
+      },
+      verify: async ({ hash, password }) => {
+        if (!hash || !password) return false;
+        if (
+          hash.startsWith("$2a$") ||
+          hash.startsWith("$2b$") ||
+          hash.startsWith("$2y$")
+        ) {
+          return await bcrypt.compare(password, hash);
+        }
+        if (hash.includes(":")) {
+          const [salt, key] = hash.split(":");
+          if (!salt || !key) return false;
+          const keyBuffer = Buffer.from(key, "hex");
+          const derivedKey = crypto.scryptSync(password, salt, keyBuffer.length);
+          return crypto.timingSafeEqual(keyBuffer, derivedKey);
+        }
+        return false;
+      },
+    },
   },
   user: {
     additionalFields: {

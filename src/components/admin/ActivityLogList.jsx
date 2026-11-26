@@ -356,6 +356,7 @@ export function ActivityLogList() {
         totalPages={totalPages}
         totalItems={totalItems}
         pageSize={pageSize}
+        itemLabel="events"
         onPageChange={(p) => setPage(p)}
         onPageSizeChange={(sz) => {
           setPageSize(sz);

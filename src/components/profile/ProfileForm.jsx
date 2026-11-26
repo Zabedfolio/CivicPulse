@@ -33,7 +33,7 @@ export function ProfileForm({ user, onProfileUpdated }) {
 
     if (!result.success) {
       const fieldErrors = {};
-      result.error.errors.forEach((err) => {
+      (result.error.issues || result.error.errors || []).forEach((err) => {
         fieldErrors[err.path[0]] = err.message;
       });
       setErrors(fieldErrors);

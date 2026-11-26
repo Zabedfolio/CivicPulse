@@ -338,6 +338,10 @@ export default function DepartmentDashboardPage() {
                   setSelectedIssue(iss);
                   setIsTriageModalOpen(true);
                 }}
+                onStatusChange={() => {
+                  fetchDepartmentIssues();
+                  fetchDepartmentStaff();
+                }}
               />
 
               {/* Spring Pagination Controls */}

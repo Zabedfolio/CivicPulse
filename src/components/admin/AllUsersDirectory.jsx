@@ -498,6 +498,7 @@ export function AllUsersDirectory({ departments = [] }) {
         totalPages={totalPages}
         totalItems={totalItems}
         pageSize={pageSize}
+        itemLabel="users"
         onPageChange={(p) => setPage(p)}
         onPageSizeChange={(sz) => {
           setPageSize(sz);

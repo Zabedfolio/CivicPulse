@@ -42,7 +42,7 @@ export function RegisterForm() {
     const validation = registerSchema.safeParse(formData);
     if (!validation.success) {
       const fieldErrors = {};
-      validation.error.errors.forEach((err) => {
+      (validation.error.issues || validation.error.errors || []).forEach((err) => {
         fieldErrors[err.path[0]] = err.message;
       });
       setErrors(fieldErrors);

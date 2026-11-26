@@ -16,6 +16,7 @@ export function PaginationControl({
   pageSize = 10,
   onPageChange,
   onPageSizeChange,
+  itemLabel = "issues",
   className = "",
 }) {
   const startItem = totalItems === 0 ? 0 : (currentPage - 1) * pageSize + 1;
@@ -52,7 +53,7 @@ export function PaginationControl({
         <span>
           Showing <span className="font-bold text-slate-900 dark:text-white">{startItem}</span>–
           <span className="font-bold text-slate-900 dark:text-white">{endItem}</span> of{" "}
-          <span className="font-bold text-slate-900 dark:text-white">{totalItems}</span> issues
+          <span className="font-bold text-slate-900 dark:text-white">{totalItems}</span> {itemLabel}
         </span>
 
         {/* Per-page selector */}

@@ -5,6 +5,9 @@ export const metadata = {
   title: "CivicPulse — Smarter Cities, Faster Fixes",
   description:
     "CivicPulse is a smart city infrastructure management platform enabling citizens and municipal authorities to report, triage, track, and resolve public works transparently.",
+  icons: {
+    icon: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {

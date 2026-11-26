@@ -71,9 +71,9 @@ export default function CitizenDashboardPage() {
               Track your reported neighborhood hazards and monitor municipal repair progress live.
             </p>
           </div>
-          <Link href="/issues/new">
-            <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-md">
-              <FilePlus2 className="w-4 h-4 mr-2" />
+          <Link href="/issues/new" className="shrink-0">
+            <Button variant="primary" size="lg" className="w-full sm:w-auto font-bold shadow-md whitespace-nowrap">
+              <FilePlus2 className="w-4 h-4 mr-2 shrink-0" />
               Report New Issue
             </Button>
           </Link>
