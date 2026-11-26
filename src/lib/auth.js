@@ -8,10 +8,6 @@ const client = new MongoClient(uri, {
 });
 const db = client.db();
 
-const authSecret =
-  process.env.BETTER_AUTH_SECRET ||
-  (process.env.NODE_ENV !== "production" ? "dev-only-better-auth-secret-change-me" : undefined);
-
 const trustedOrigins = [
   process.env.NEXT_PUBLIC_APP_URL,
   process.env.BETTER_AUTH_URL,
@@ -20,7 +16,7 @@ const trustedOrigins = [
 
 export const auth = betterAuth({
   database: mongodbAdapter(db),
-  secret: authSecret,
+  secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
   trustedOrigins,
   advanced: {
